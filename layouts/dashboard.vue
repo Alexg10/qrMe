@@ -8,6 +8,8 @@ import {
   PanelLeft,
   Settings,
   ShoppingCart,
+  WalletCards,
+  CreditCard,
   Users2,
 } from "lucide-vue-next";
 import { Icon } from "@iconify/vue";
@@ -54,18 +56,11 @@ const handleLogout = async () => {
       class="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex"
     >
       <nav class="flex flex-col items-center gap-4 px-2 sm:py-5">
-        <a
-          href="#"
-          class="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
-        >
-          <Package2 class="h-4 w-4 transition-all group-hover:scale-110" />
-          <span class="sr-only">Acme Inc</span>
-        </a>
         <Tooltip>
           <TooltipTrigger as-child>
             <a
               href="#"
-              class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+              class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground bg-primary transition-colors text-primary-foreground hover:text-foreground md:h-8 md:w-8"
             >
               <Home class="h-5 w-5" />
               <span class="sr-only">Dashboard</span>
@@ -79,11 +74,11 @@ const handleLogout = async () => {
               href="#"
               class="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
             >
-              <ShoppingCart class="h-5 w-5" />
-              <span class="sr-only">Orders</span>
+              <CreditCard class="h-5 w-5" />
+              <span class="sr-only">Cards</span>
             </a>
           </TooltipTrigger>
-          <TooltipContent side="right"> Orders </TooltipContent>
+          <TooltipContent side="right">Cards</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger as-child>
@@ -91,11 +86,11 @@ const handleLogout = async () => {
               href="#"
               class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
             >
-              <Package class="h-5 w-5" />
-              <span class="sr-only">Products</span>
+              <WalletCards class="h-5 w-5" />
+              <span class="sr-only">Wallet</span>
             </a>
           </TooltipTrigger>
-          <TooltipContent side="right"> Products </TooltipContent>
+          <TooltipContent side="right"> Wallet </TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger as-child>
@@ -267,9 +262,7 @@ const handleLogout = async () => {
           </div>
         </div>
       </header>
-      <main
-        class="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3"
-      >
+      <main class="p-4 sm:px-6 sm:py-0">
         <slot />
       </main>
     </div>
