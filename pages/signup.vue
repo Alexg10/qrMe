@@ -6,16 +6,28 @@ const password = ref("");
 const firstName = ref("");
 const lastName = ref("");
 const successMessage = ref("");
+const errorMessage = ref("");
 
 const handleSubmit = async () => {
-  const { user, error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email: email.value,
     password: password.value,
+    options: {
+      data: {
+        first_name: firstName.value,
+        last_name: lastName.value,
+      },
+    },
   });
 
   if (error) {
     console.error("Error creating user:", error.message);
+    errorMessage.value = "erro: " + error.message;
     return;
+  } else {
+    console.log("User created:", data);
+    successMessage.value =
+      "User created successfully, please check your email to validate";
   }
 };
 </script>
@@ -72,9 +84,13 @@ const handleSubmit = async () => {
             <p v-if="successMessage" class="text-green-500 text-center">
               {{ successMessage }}
             </p>
+            <p v-if="errorMessage" class="text-red-500 text-center">
+              {{ errorMessage }}
+            </p>
           </form>
+          <Separator />
           <Button variant="outline" class="w-full">
-            Sign up with GitHub
+            Sign up with Google
           </Button>
         </div>
         <div class="mt-4 text-center text-sm">
