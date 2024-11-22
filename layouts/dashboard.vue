@@ -14,14 +14,7 @@ import {
 } from "lucide-vue-next";
 import { Icon } from "@iconify/vue";
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+import Breadcrumb from "@/components/dashboard/Breadcrumb.vue";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -195,25 +188,7 @@ const handleLogout = async () => {
         <div
           class="flex items-center gap-4 lg:justify-between w-full justify-end"
         >
-          <Breadcrumb class="hidden md:flex">
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink as-child>
-                  <a href="#">Dashboard</a>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink as-child>
-                  <a href="#">Orders</a>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Recent Orders</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+          <Breadcrumb />
           <div class="flex items-center gap-4">
             <DropdownMenu>
               <DropdownMenuTrigger as-child>

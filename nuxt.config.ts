@@ -7,6 +7,11 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "@nuxtjs/supabase",
   ],
+  runtimeConfig: {
+    public: {
+      baseURL: process.env.BASE_URL || "http://localhost:3000",
+    },
+  },
   devtools: { enabled: true },
   css: ["~/assets/css/main.css"],
   compatibilityDate: "2024-04-03",
