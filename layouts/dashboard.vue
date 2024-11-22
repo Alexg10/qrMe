@@ -36,6 +36,13 @@ import {
 const router = useRouter();
 const colorMode = useColorMode();
 const supabase = useSupabaseClient();
+const config = useRuntimeConfig();
+const baseUrl = config.public.baseURL;
+
+onMounted(() => {
+  console.log(baseUrl);
+  console.log(router.currentRoute.value.path);
+});
 
 const handleLogout = async () => {
   await supabase.auth.signOut();
@@ -51,61 +58,87 @@ const handleLogout = async () => {
       <nav class="flex flex-col items-center gap-4 px-2 sm:py-5">
         <Tooltip>
           <TooltipTrigger as-child>
-            <a
-              href="#"
-              class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground bg-primary transition-colors text-primary-foreground hover:text-foreground md:h-8 md:w-8"
+            <NuxtLink
+              to="/dashboard"
+              :class="
+                router.currentRoute.value.path === '/dashboard'
+                  ? 'bg-primary text-primary-foreground hover:text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+              "
+              class="flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:text-foreground md:h-8 md:w-8"
             >
               <Home class="h-5 w-5" />
               <span class="sr-only">Dashboard</span>
-            </a>
+            </NuxtLink>
           </TooltipTrigger>
           <TooltipContent side="right"> Dashboard </TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger as-child>
-            <a
-              href="#"
-              class="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+            <NuxtLink
+              to="/dashboard/cards/create"
+              :class="
+                router.currentRoute.value.path === '/dashboard/cards/create' ||
+                router.currentRoute.value.path === '/dashboard/cards'
+                  ? 'bg-primary text-primary-foreground hover:text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+              "
+              class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8 hover:bg-accent"
             >
               <CreditCard class="h-5 w-5" />
               <span class="sr-only">Cards</span>
-            </a>
+            </NuxtLink>
           </TooltipTrigger>
           <TooltipContent side="right">Cards</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger as-child>
-            <a
-              href="#"
-              class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+            <NuxtLink
+              to="/dashboard/wallet"
+              :class="
+                router.currentRoute.value.path === '/dashboard/wallet'
+                  ? 'bg-primary text-primary-foreground hover:text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+              "
+              class="flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:text-foreground md:h-8 md:w-8"
             >
               <WalletCards class="h-5 w-5" />
               <span class="sr-only">Wallet</span>
-            </a>
+            </NuxtLink>
           </TooltipTrigger>
           <TooltipContent side="right"> Wallet </TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger as-child>
-            <a
-              href="#"
-              class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+            <NuxtLink
+              to="/dashboard/profile"
+              :class="
+                router.currentRoute.value.path === '/dashboard/profile'
+                  ? 'bg-primary text-primary-foreground hover:text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+              "
+              class="flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:text-foreground md:h-8 md:w-8"
             >
               <Users2 class="h-5 w-5" />
-              <span class="sr-only">Customers</span>
-            </a>
+              <span class="sr-only">Profil</span>
+            </NuxtLink>
           </TooltipTrigger>
-          <TooltipContent side="right"> Customers </TooltipContent>
+          <TooltipContent side="right"> Profil </TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger as-child>
-            <a
-              href="#"
-              class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
+            <NuxtLink
+              to="/dashboard/analytics"
+              :class="
+                router.currentRoute.value.path === '/dashboard/analytics'
+                  ? 'bg-primary text-primary-foreground hover:text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+              "
+              class="flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:text-foreground md:h-8 md:w-8"
             >
               <LineChart class="h-5 w-5" />
               <span class="sr-only">Analytics</span>
-            </a>
+            </NuxtLink>
           </TooltipTrigger>
           <TooltipContent side="right"> Analytics </TooltipContent>
         </Tooltip>
