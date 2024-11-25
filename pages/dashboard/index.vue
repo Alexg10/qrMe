@@ -39,34 +39,8 @@ definePageMeta({
         <div
           class="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4"
         >
-          <Card class="sm:col-span-2">
-            <CardHeader class="pb-3">
-              <CardTitle>Welcome !</CardTitle>
-              <CardDescription class="max-w-lg text-balance leading-relaxed">
-                Introducing Our Dynamic Orders Dashboard for Seamless Management
-                and Insightful Analysis.
-              </CardDescription>
-            </CardHeader>
-            <CardFooter>
-              <NuxtLink to="/dashboard/profile">
-                <Button>Edit my profile</Button>
-              </NuxtLink>
-            </CardFooter>
-          </Card>
-          <Card class="sm:col-span-2">
-            <CardHeader class="pb-3">
-              <CardTitle>Let's create your first card !</CardTitle>
-              <CardDescription class="max-w-lg text-balance leading-relaxed">
-                Your card will be used to generate your QR code. You can edit it
-                later.
-              </CardDescription>
-            </CardHeader>
-            <CardFooter>
-              <NuxtLink to="/dashboard/cards/create">
-                <Button>Create new card</Button>
-              </NuxtLink>
-            </CardFooter>
-          </Card>
+          <DashboardWelcomeCards />
+          <DashboardCreateCard />
           <Card>
             <CardHeader class="pb-2">
               <CardDescription>This Week</CardDescription>
@@ -96,15 +70,7 @@ definePageMeta({
             </CardFooter>
           </Card>
         </div>
-        <Card>
-          <CardHeader class="px-7">
-            <CardTitle>My stats</CardTitle>
-            <CardDescription> Recent stats from your cards. </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <DashboardGraph />
-          </CardContent>
-        </Card>
+        <DashboardStats />
       </div>
       <div>
         <Card class="overflow-hidden">

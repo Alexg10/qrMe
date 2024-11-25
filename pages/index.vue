@@ -1,38 +1,31 @@
+<script setup lang="ts">
+import { CreditCard } from "lucide-vue-next";
+</script>
+
 <template>
   <section class="py-32">
     <div class="container text-center">
-      <div class="mx-auto flex max-w-screen-lg flex-col gap-6">
+      <div class="mx-auto flex max-w-screen-lg flex-col gap-6 mb-10">
         <h1 class="text-3xl font-extrabold lg:text-6xl">
-          A Collection of Components Built With Shadcn & Tailwind
+          Your Digital Business Card Hub
         </h1>
         <p class="text-balance text-muted-foreground lg:text-lg">
-          Finely crafted components built with React, Tailwind and Shadcn UI.
-          Developers can copy and paste these blocks directly into their
-          project.
+          Effortlessly create, share, and manage your digital business cards
+          with QR codes. Scan to connect, save profiles to your wallet, and
+          build your professional network—all in one place.
         </p>
       </div>
-      <NuxtLink to="/login" size="lg" class="mt-10"> Try it </NuxtLink>
+      <NuxtLink to="/login" size="lg" class="">
+        <Button
+          >Create your card now
+          <CreditCard />
+        </Button>
+      </NuxtLink>
       <div
         class="mx-auto mt-10 flex w-fit flex-col items-center gap-4 sm:flex-row"
       >
-        <div>
-          <div class="flex items-center gap-1">
-            <Star class="size-5 fill-yellow-400 text-yellow-400" />
-            <Star class="size-5 fill-yellow-400 text-yellow-400" />
-            <Star class="size-5 fill-yellow-400 text-yellow-400" />
-            <Star class="size-5 fill-yellow-400 text-yellow-400" />
-            <Star class="size-5 fill-yellow-400 text-yellow-400" />
-            <span class="font-semibold">5.0</span>
-          </div>
-          <p class="text-left font-medium text-muted-foreground">
-            from 200+ reviews
-          </p>
-        </div>
+        <StarRating :rating="5" :total-reviews="200" :size="5" />
       </div>
     </div>
   </section>
 </template>
-
-<script setup lang="ts">
-import { Star } from "lucide-vue-next";
-</script>
