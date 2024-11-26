@@ -21,6 +21,11 @@ const color = ref("yellow");
 const namePreview = ref("John Doe");
 const jobPreview = ref("CTO @company");
 const cardName = ref("My card");
+const route = useRoute();
+const id = ref(route.params.id);
+const loading = ref(true);
+
+console.log(id);
 
 const handleCardNameChange = (value: string) => {
   cardName.value = value;
@@ -35,25 +40,50 @@ const handleJobChange = (value: string) => {
   jobPreview.value = value;
 };
 
-const handleCreateCard = async () => {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  console.log(user);
-
-  const { data, error } = await supabase.from("Cards").insert({
-    name: cardName.value,
-    color: color.value,
-    job: jobPreview.value,
-    name: namePreview.value,
-    user_id: user.id,
-  });
+const handleUpdateCard = async () => {
+  const { data, error } = await supabase
+    .from("Cards")
+    .update({
+      name: cardName.value,
+      color: color.value,
+      job: jobPreview.value,
+      name: namePreview.value,
+    })
+    .eq("id", id.value);
   if (error) {
     console.error("Error creating card:", error.message);
     return;
   }
   console.log("Card created:", data);
 };
+
+const fetchCard = async () => {
+  const { data, error } = await supabase
+    .from("Cards")
+    .select("*")
+    .eq("id", id.value)
+    .single();
+
+  if (error) {
+    toast({
+      title: "Erreur",
+      description: "Impossible de charger la carte",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  cardName.value = data.name;
+  color.value = data.color;
+  namePreview.value = data.name;
+  jobPreview.value = data.job;
+
+  loading.value = false;
+};
+
+onMounted(() => {
+  fetchCard();
+});
 </script>
 
 <template>
@@ -61,24 +91,6 @@ const handleCreateCard = async () => {
     <div
       class="grid flex-1 items-start gap-4 md:gap-8 lg:grid-cols-3 xl:grid-cols-3"
     >
-      <Card class="sm:col-span-2">
-        <CardHeader class="pb-3">
-          <CardTitle>Create new card !</CardTitle>
-          <CardDescription class="max-w-lg text-balance leading-relaxed">
-            Introducing Our Dynamic Orders Dashboard for Seamless Management and
-            Insightful Analysis.
-          </CardDescription>
-        </CardHeader>
-        <CardFooter>
-          <Button>Create new card</Button>
-        </CardFooter>
-      </Card>
-      <CardPreview
-        :card-name="cardName"
-        :color="color"
-        :name-preview="namePreview"
-        :job-preview="jobPreview"
-      />
       <Card class="sm:col-span-2">
         <CardHeader class="pb-3">
           <CardTitle>Edit card</CardTitle>
@@ -89,21 +101,30 @@ const handleCreateCard = async () => {
               <div class="flex flex-col gap-2">
                 <Label>Card name</Label>
                 <Input
+                  v-model="cardName"
                   label="Name"
                   @update:model-value="handleCardNameChange"
                 />
               </div>
               <div class="flex flex-col gap-2">
                 <Label>Name</Label>
-                <Input label="Name" @update:model-value="handleNameChange" />
+                <Input
+                  v-model="namePreview"
+                  label="Name"
+                  @update:model-value="handleNameChange"
+                />
               </div>
               <div class="flex flex-col gap-2">
                 <Label>Job</Label>
-                <Input label="Job" @update:model-value="handleJobChange" />
+                <Input
+                  v-model="jobPreview"
+                  label="Job"
+                  @update:model-value="handleJobChange"
+                />
               </div>
               <div class="flex flex-col gap-2">
                 <Label>Color</Label>
-                <Select @update:model-value="handleColorChange">
+                <Select v-model="color" @update:model-value="handleColorChange">
                   <SelectTrigger class="w-full">
                     <SelectValue placeholder="Select a color" />
                   </SelectTrigger>
@@ -126,9 +147,9 @@ const handleCreateCard = async () => {
           <Button
             @click="
               () => {
-                handleCreateCard();
+                handleUpdateCard();
                 toast({
-                  description: 'Your card has been created!',
+                  description: 'Your card has been updated!',
                 });
               }
             "
@@ -136,6 +157,15 @@ const handleCreateCard = async () => {
           >
         </CardFooter>
       </Card>
+      <div v-if="loading">Chargement des cartes...</div>
+
+      <CardPreview
+        v-else
+        :card-name="cardName"
+        :color="color"
+        :name-preview="namePreview"
+        :job-preview="jobPreview"
+      />
     </div>
   </NuxtLayout>
 </template>
