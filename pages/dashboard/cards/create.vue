@@ -63,24 +63,6 @@ const handleCreateCard = async () => {
     >
       <Card class="sm:col-span-2">
         <CardHeader class="pb-3">
-          <CardTitle>Create new card !</CardTitle>
-          <CardDescription class="max-w-lg text-balance leading-relaxed">
-            Introducing Our Dynamic Orders Dashboard for Seamless Management and
-            Insightful Analysis.
-          </CardDescription>
-        </CardHeader>
-        <CardFooter>
-          <Button>Create new card</Button>
-        </CardFooter>
-      </Card>
-      <CardPreview
-        :card-name="cardName"
-        :color="color"
-        :name-preview="namePreview"
-        :job-preview="jobPreview"
-      />
-      <Card class="sm:col-span-2">
-        <CardHeader class="pb-3">
           <CardTitle>Edit card</CardTitle>
         </CardHeader>
         <CardContent class="max-w-lg text-balance leading-relaxed">
@@ -89,17 +71,26 @@ const handleCreateCard = async () => {
               <div class="flex flex-col gap-2">
                 <Label>Card name</Label>
                 <Input
+                  v-model="cardName"
                   label="Name"
                   @update:model-value="handleCardNameChange"
                 />
               </div>
               <div class="flex flex-col gap-2">
                 <Label>Name</Label>
-                <Input label="Name" @update:model-value="handleNameChange" />
+                <Input
+                  v-model="namePreview"
+                  label="Name"
+                  @update:model-value="handleNameChange"
+                />
               </div>
               <div class="flex flex-col gap-2">
                 <Label>Job</Label>
-                <Input label="Job" @update:model-value="handleJobChange" />
+                <Input
+                  v-model="jobPreview"
+                  label="Job"
+                  @update:model-value="handleJobChange"
+                />
               </div>
               <div class="flex flex-col gap-2">
                 <Label>Color</Label>
@@ -136,6 +127,12 @@ const handleCreateCard = async () => {
           >
         </CardFooter>
       </Card>
+      <CardPreview
+        :card-name="cardName"
+        :color="color"
+        :name-preview="namePreview"
+        :job-preview="jobPreview"
+      />
     </div>
   </NuxtLayout>
 </template>

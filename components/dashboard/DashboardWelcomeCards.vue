@@ -5,8 +5,8 @@
     <CardHeader class="pb-3">
       <CardTitle>Welcome !</CardTitle>
       <CardDescription class="max-w-lg text-balance leading-relaxed">
-        Introducing Our Dynamic Orders Dashboard for Seamless Management and
-        Insightful Analysis.
+        Let's start by creating your profile ! Everyone want to know who you are
+        !
       </CardDescription>
     </CardHeader>
     <CardFooter>

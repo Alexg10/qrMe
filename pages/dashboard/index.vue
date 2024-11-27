@@ -10,19 +10,35 @@ definePageMeta({
 const supabase = useSupabaseClient();
 
 const cards = ref([]);
+const loading = ref(true);
 
 const fetchUserCards = async () => {
-  const { data, error } = await supabase.from("Cards").select("*");
-  if (error) {
-    console.error("Error fetching cards:", error.message);
-    return;
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const { data, error: cardsError } = await supabase
+      .from("Cards")
+      .select("*")
+      .eq("user_id", user.id);
+
+    if (cardsError) throw cardsError;
+    cards.value = data;
+  } catch (e) {
+    error.value = e;
+    useToast().toast({
+      title: "Erreur",
+      description: "Impossible de charger les cartes",
+      variant: "destructive",
+    });
+  } finally {
+    loading.value = false;
   }
-  cards.value = data;
 };
 
 onMounted(() => {
   fetchUserCards();
-  console.log(cards);
+  console.log(cards.value);
 });
 </script>
 
@@ -42,11 +58,16 @@ onMounted(() => {
         <DashboardStats />
       </div>
       <div>
+        <div v-if="loading">Chargement des cartes...</div>
+
         <CardPreview
-          :card-name="cardName"
-          :color="color"
-          :name-preview="namePreview"
-          :job-preview="jobPreview"
+          v-else
+          :id="cards[0].id"
+          :card-name="cards[0].name"
+          :color="cards[0].color"
+          :name-preview="cards[0].name"
+          :job-preview="cards[0].job"
+          :button="`edit`"
         />
       </div>
     </div>
