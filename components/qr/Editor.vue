@@ -84,6 +84,20 @@ async function destroy() {
   }
 }
 
+// Mobile : quand le grand aperçu sort de l'écran, une mini-carte fixe prend le relais.
+const previewEl = ref<HTMLElement>();
+const previewHidden = ref(false);
+let io: IntersectionObserver | undefined;
+onMounted(() => {
+  if (!previewEl.value || !("IntersectionObserver" in window)) return;
+  io = new IntersectionObserver(([e]) => (previewHidden.value = !e.isIntersecting && e.boundingClientRect.top < 0));
+  io.observe(previewEl.value);
+});
+onBeforeUnmount(() => io?.disconnect());
+function scrollToPreview() {
+  previewEl.value?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 const link = computed(() => (props.card ? cardUrl(props.card.slug) : ""));
 async function copyLink() {
   try {
@@ -185,7 +199,7 @@ async function copyLink() {
       </div>
     </form>
 
-    <div class="preview-col">
+    <div ref="previewEl" class="preview-col">
       <QrCard :card="preview" />
       <div class="meta">
         <template v-if="card">
@@ -196,6 +210,12 @@ async function copyLink() {
       </div>
       <p v-if="card && !isActive" class="q-error">Carte désactivée : son QR ne mène plus nulle part.</p>
     </div>
+
+    <Transition name="mini">
+      <button v-if="previewHidden" type="button" class="mini" aria-label="Revenir à l'aperçu de la carte" @click="scrollToPreview">
+        <QrCard :card="preview" />
+      </button>
+    </Transition>
   </div>
 </template>
 
@@ -216,8 +236,15 @@ async function copyLink() {
 .preview-col > :first-child { box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.8); }
 .meta { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
 .link { overflow-wrap: anywhere; user-select: all; }
+.mini { display: none; }
 @media (max-width: 1000px) {
   .editor { grid-template-columns: minmax(0, 1fr); }
+  .mini {
+    display: block; position: fixed; z-index: 40; top: calc(12px + env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px));
+    width: 108px; padding: 0; border: 0; background: none; cursor: pointer; box-shadow: 0 12px 30px -8px rgb(0 0 0 / 0.85);
+  }
+  .mini-enter-active, .mini-leave-active { transition: opacity 0.2s ease, transform 0.2s ease; }
+  .mini-enter-from, .mini-leave-to { opacity: 0; transform: translateY(-8px) scale(0.92); }
   .preview-col { position: static; max-width: 340px; width: 100%; margin: 0 auto; order: -1; }
 }
 @media (max-width: 520px) {
