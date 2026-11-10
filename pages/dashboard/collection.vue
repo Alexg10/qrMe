@@ -100,7 +100,7 @@ function exportAs(fmt: "csv" | "vcf") {
         <span class="count">{{ entries.length }}</span>
         <span class="q-note">carte{{ entries.length > 1 ? "s" : "" }} collectée{{ entries.length > 1 ? "s" : "" }}<br >{{ weekCount }} cette semaine</span>
       </div>
-      <div class="toggle" role="group" aria-label="Affichage">
+      <div v-if="entries.length" class="toggle" role="group" aria-label="Affichage">
         <button type="button" class="q-pill" :class="{ on: mode === 'grid' }" @click="mode = 'grid'">Cartes</button>
         <button type="button" class="q-pill" :class="{ on: mode === 'list' }" @click="mode = 'list'">Liste</button>
         <div class="exp">
@@ -116,6 +116,7 @@ function exportAs(fmt: "csv" | "vcf") {
       </div>
     </div>
 
+    <template v-if="entries.length">
     <div class="tools">
       <label class="search" for="q">
         <Search aria-hidden="true" :size="18" />
@@ -136,6 +137,7 @@ function exportAs(fmt: "csv" | "vcf") {
       </button>
       <button v-for="t in allTags" :key="t" type="button" class="q-pill" :class="{ on: filter === t }" @click="filter = t">{{ t }}</button>
     </div>
+    </template>
 
     <!-- vide -->
     <div v-if="loaded && !entries.length" class="empty">

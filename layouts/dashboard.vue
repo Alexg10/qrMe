@@ -157,9 +157,15 @@ main > :deep(*) { max-width: 1180px; }
     position: fixed; inset: auto 0 0 0; top: auto; height: auto; flex-direction: row; justify-content: space-around; gap: 4px;
     padding: 8px max(12px, env(safe-area-inset-right, 0px)) calc(8px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
   }
-  /* 5 onglets avec libellé : SHOWme, Scanner, Collection, Mes cartes, Compte. */
+  /* 5 onglets avec libellé (ordre fixé plus bas). */
   .side { justify-content: stretch; gap: 0; padding-top: 6px; }
   .nav { display: contents; }
+  /* Ordre mobile : Scanner, Mes cartes, SHOWme (au milieu), Collection, Compte. */
+  .nav a:nth-child(2) { order: 1; }
+  .nav a:nth-child(4) { order: 2; }
+  .nav a:nth-child(1) { order: 3; }
+  .nav a:nth-child(3) { order: 4; }
+  .me { order: 5; }
   .nav a, .av-btn, .me { flex: 1 1 0; min-width: 0; }
   .nav a, .av-btn {
     width: auto; height: 54px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;

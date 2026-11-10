@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Plus } from "lucide-vue-next";
+
 definePageMeta({ layout: "dashboard" });
 useHead({ title: "Mes cartes · qrMe" });
 
@@ -25,6 +27,8 @@ onMounted(() => loadStats().catch(() => {}));
       <p>Une carte par contexte, chacune avec son QR et sa page. Clique sur une carte pour la modifier.</p>
     </div>
 
+    <NuxtLink v-if="cards.length" to="/dashboard/cards/new" class="q-pill solid new-btn top"><Plus aria-hidden="true" />Nouvelle carte</NuxtLink>
+
     <div class="mine">
       <figure v-for="(c, i) in cards" :key="c.id" :class="{ off: !c.is_active }">
         <NuxtLink :to="`/dashboard/cards/${c.id}`" class="tap" :aria-label="`Modifier la carte ${c.label}`">
@@ -44,6 +48,8 @@ onMounted(() => loadStats().catch(() => {}));
         <span class="q-note">Nouvelle carte</span>
       </NuxtLink>
     </div>
+
+    <NuxtLink v-if="cards.length" to="/dashboard/cards/new" class="q-pill solid new-btn bottom"><Plus aria-hidden="true" />Nouvelle carte</NuxtLink>
     <p v-if="!loaded && !cards.length" class="q-note">Chargement…</p>
   </div>
 </template>
@@ -61,4 +67,21 @@ figcaption b { color: var(--paper); font-weight: 500; }
 .new { aspect-ratio: 55 / 85; border: 1.5px dashed var(--line); display: grid; place-content: center; gap: 8px; text-align: center; color: var(--mute); }
 .new strong { font-family: var(--f-display); font-weight: var(--w-display); font-size: 64px; line-height: 0.8; color: var(--paper); }
 .new:hover { border-color: var(--paper); }
+.new-btn { display: none; }
+
+/* mobile : carrousel horizontal, chaque carte fait 3/4 de la largeur */
+@media (max-width: 860px) {
+  .mine {
+    display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
+    margin-inline: -16px; padding: 8px 16px 4px; scroll-padding-inline: 16px; scrollbar-width: none;
+  }
+  .mine::-webkit-scrollbar { display: none; }
+  .mine > * { flex: 0 0 75vw; scroll-snap-align: center; }
+  /* la tuile « + » ne reste que si aucune carte (les boutons prennent le relais) */
+  .mine > figure ~ .new { display: none; }
+  .tap:hover { transform: none; }
+  .new-btn { display: inline-flex; width: fit-content; }
+  .new-btn.top { margin-bottom: 20px; }
+  .new-btn.bottom { margin-top: 20px; }
+}
 </style>
