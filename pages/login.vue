@@ -41,7 +41,10 @@ async function submit() {
         <input id="email" v-model="email" type="email" autocomplete="email" required >
       </div>
       <div class="q-field">
-        <label for="password">Mot de passe</label>
+        <div class="pw-row">
+          <label for="password">Mot de passe</label>
+          <NuxtLink :to="{ path: '/forgot', query: email ? { email } : {} }" class="lnk small">Mot de passe oublié ?</NuxtLink>
+        </div>
         <input id="password" v-model="password" type="password" autocomplete="current-password" required >
       </div>
       <p v-if="errorMsg" class="q-error" role="alert">{{ errorMsg }}</p>
@@ -57,5 +60,7 @@ async function submit() {
 <style scoped>
 .form { display: grid; gap: 18px; justify-items: stretch; }
 .form .q-pill { justify-self: start; }
+.pw-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
 .lnk { color: var(--paper); text-decoration: underline; text-underline-offset: 3px; }
+.lnk.small { font-size: 12px; color: var(--mute); }
 </style>
