@@ -1,41 +1,59 @@
 <script setup lang="ts">
-import SignupForm from "@/components/form/SignupForm.vue";
+useHead({ title: "Créer un compte · qrMe" });
+
+const supabase = useSupabaseClient();
+const route = useRoute();
+const email = ref("");
+const password = ref("");
+const busy = ref(false);
+const errorMsg = ref("");
+const sent = ref(false);
+
+async function submit() {
+  busy.value = true;
+  errorMsg.value = "";
+  const redirect = String(route.query.redirect || "");
+  const back = redirect.startsWith("/") && !redirect.startsWith("//") ? `?redirect=${encodeURIComponent(redirect)}` : "";
+  const { error } = await supabase.auth.signUp({
+    email: email.value.trim(),
+    password: password.value,
+    options: { emailRedirectTo: `${window.location.origin}/confirm${back}` },
+  });
+  busy.value = false;
+  if (error) errorMsg.value = error.message;
+  else sent.value = true;
+}
 </script>
 
 <template>
-  <div
-    class="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px] lg:h-screen"
-  >
-    <div class="flex items-center justify-center py-12">
-      <div class="mx-auto grid w-[350px] gap-6">
-        <div class="grid gap-4">
-          <div class="grid gap-2 text-center">
-            <FormHeader
-              title="Sign Up"
-              description="Enter your information to create an account"
-            />
-          </div>
-          <SignupForm />
-          <Separator />
-          <Button variant="outline" class="w-full">
-            Sign up with Google
-          </Button>
-        </div>
-        <div class="mt-4 text-center text-sm">
-          Already have an account?
-          <NuxtLink href="/login" class="underline"> Log in </NuxtLink>
-        </div>
+  <AuthShell title="Créer un compte" subtitle="Un e-mail, un mot de passe, et ta carte est prête en une minute.">
+    <div v-if="sent" class="sent">
+      <p>On t'a envoyé un lien de confirmation à <b>{{ email }}</b>. Clique dessus pour activer ton compte.</p>
+      <p class="q-note">Rien reçu ? Regarde dans les indésirables.</p>
+    </div>
+    <form v-else class="form" @submit.prevent="submit">
+      <div class="q-field">
+        <label for="email">E-mail</label>
+        <input id="email" v-model="email" type="email" autocomplete="email" required >
       </div>
-    </div>
-    <div class="hidden bg-muted lg:block">
-      <NuxtImg
-        fit="cover"
-        src="https://images.unsplash.com/photo-1707906799973-0437e0accfab?q=80&w=2187&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        alt="Image"
-        width="1920"
-        height="1080"
-        class="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-      />
-    </div>
-  </div>
+      <div class="q-field">
+        <label for="password">Mot de passe <span class="opt">· 8 caractères minimum</span></label>
+        <input id="password" v-model="password" type="password" autocomplete="new-password" minlength="8" required >
+      </div>
+      <p v-if="errorMsg" class="q-error" role="alert">{{ errorMsg }}</p>
+      <button type="submit" class="q-pill solid big" :disabled="busy">{{ busy ? "Création…" : "Créer mon compte" }}</button>
+    </form>
+    <p class="q-note">
+      Déjà un compte ?
+      <NuxtLink :to="{ path: '/login', query: route.query }" class="lnk">Se connecter</NuxtLink>
+    </p>
+  </AuthShell>
 </template>
+
+<style scoped>
+.form { display: grid; gap: 18px; }
+.form .q-pill { justify-self: start; }
+.sent { display: grid; gap: 8px; }
+.sent p { margin: 0; }
+.lnk { color: var(--paper); text-decoration: underline; text-underline-offset: 3px; }
+</style>

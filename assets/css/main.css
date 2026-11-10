@@ -2,68 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Identité qrMe : app sombre et éditoriale. Les cartes en aplats de couleur sont les seuls objets lumineux.
+ * Les variables shadcn (--background, --primary…) sont alignées sur cette palette pour les composants ui/.
+ */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 20 14.3% 4.1%;
+    --ink: #0d0d0b;
+    --ink-2: #1a1a17;
+    --line: #34332e;
+    --paper: #efece4;
+    --mute: #8f8c82;
+    --faint: #5d5b54;
 
-    --muted: 60 4.8% 95.9%;
-    --muted-foreground: 25 5.3% 44.7%;
+    --c-jaune: #f3d23a;
+    --c-vert: #4fa26b;
+    --c-bleu: #4b5fd1;
+    --c-lilas: #bba5de;
+    --c-rouge: #e2463a;
+    --c-papier: #efece4;
+    --c-noir: #1a1a17;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 20 14.3% 4.1%;
+    --f-display: "Archivo", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+    --f-body: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
 
-    --card: 0 0% 100%;
-    --card-foreground: 20 14.3% 4.1%;
+    /* shadcn */
+    --background: 60 4% 5%;
+    --foreground: 44 22% 92%;
+    --muted: 60 5% 10%;
+    --muted-foreground: 47 4% 54%;
+    --popover: 60 5% 10%;
+    --popover-foreground: 44 22% 92%;
+    --card: 60 5% 10%;
+    --card-foreground: 44 22% 92%;
+    --border: 50 5% 19%;
+    --input: 50 5% 19%;
+    --primary: 44 22% 92%;
+    --primary-foreground: 60 4% 5%;
+    --secondary: 60 5% 10%;
+    --secondary-foreground: 44 22% 92%;
+    --accent: 50 88% 59%;
+    --accent-foreground: 60 4% 5%;
+    --destructive: 4 74% 56%;
+    --destructive-foreground: 44 22% 92%;
+    --ring: 50 88% 59%;
+    --radius: 0rem;
 
-    --border: 20 5.9% 90%;
-    --input: 20 5.9% 90%;
-
-    --primary: 24 9.8% 10%;
-    --primary-foreground: 60 9.1% 97.8%;
-
-    --secondary: 60 4.8% 95.9%;
-    --secondary-foreground: 24 9.8% 10%;
-
-    --accent: 60 4.8% 95.9%;
-    --accent-foreground: 24 9.8% 10%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 60 9.1% 97.8%;
-
-    --ring: 20 14.3% 4.1%;
-
-    --radius: 0.5rem;
-  }
-  .dark {
-    --background: 20 14.3% 4.1%;
-    --foreground: 60 9.1% 97.8%;
-
-    --muted: 12 6.5% 15.1%;
-    --muted-foreground: 24 5.4% 63.9%;
-
-    --popover: 20 14.3% 4.1%;
-    --popover-foreground: 60 9.1% 97.8%;
-
-    --card: 20 14.3% 4.1%;
-    --card-foreground: 60 9.1% 97.8%;
-
-    --border: 12 6.5% 15.1%;
-    --input: 12 6.5% 15.1%;
-
-    --primary: 60 9.1% 97.8%;
-    --primary-foreground: 24 9.8% 10%;
-
-    --secondary: 12 6.5% 15.1%;
-    --secondary-foreground: 60 9.1% 97.8%;
-
-    --accent: 12 6.5% 15.1%;
-    --accent-foreground: 60 9.1% 97.8%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 60 9.1% 97.8%;
-
-    --ring: 24 5.7% 82.9%;
+    color-scheme: dark;
   }
 }
 
@@ -71,7 +57,170 @@
   * {
     @apply border-border;
   }
+  html,
   body {
-    @apply bg-background text-foreground;
+    min-height: 100%;
+  }
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--f-body);
+    font-size: 15px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--c-jaune);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Titre de page géant, condensé */
+  .q-h1 {
+    margin: 0;
+    font-family: var(--f-display);
+    font-weight: 900;
+    font-stretch: 68%;
+    text-transform: uppercase;
+    font-size: clamp(52px, 8vw, 104px);
+    line-height: 0.84;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  .q-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+  .q-head p {
+    margin: 0;
+    max-width: 40ch;
+    color: var(--mute);
+  }
+  .q-note {
+    font-family: var(--f-mono);
+    font-size: 12px;
+    color: var(--mute);
+  }
+  .q-lbl {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--mute);
+  }
+
+  /* Bouton pilule à contour */
+  .q-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1.5px solid var(--paper);
+    border-radius: 999px;
+    padding: 6px 14px;
+    background: transparent;
+    color: var(--paper);
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-stretch: 85%;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .q-pill:hover:not(.on):not(:disabled) {
+    background: var(--ink-2);
+  }
+  .q-pill.on {
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .q-pill.solid {
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .q-pill.solid:hover:not(:disabled) {
+    background: var(--c-jaune);
+    border-color: var(--c-jaune);
+  }
+  .q-pill.big {
+    padding: 10px 18px;
+    font-size: 14px;
+  }
+  .q-pill:disabled {
+    opacity: 0.55;
+    cursor: default;
+  }
+  .q-pill svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Champ souligné */
+  .q-field {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+  }
+  .q-field label {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--mute);
+  }
+  .q-field label .opt {
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--faint);
+  }
+  .q-field input,
+  .q-field textarea,
+  .q-field select {
+    background: transparent;
+    border: 0;
+    border-bottom: 1.5px solid var(--line);
+    padding: 6px 0 8px;
+    outline: none;
+    width: 100%;
+    font-size: 16px;
+    color: var(--paper);
+    resize: vertical;
+  }
+  .q-field input:focus,
+  .q-field textarea:focus {
+    border-color: var(--paper);
+  }
+  .q-field input::placeholder,
+  .q-field textarea::placeholder {
+    color: var(--faint);
+  }
+
+  /* Zone de note */
+  .q-textarea {
+    background: var(--ink-2);
+    border: 1.5px solid var(--line);
+    color: var(--paper);
+    padding: 10px 12px;
+    font-size: 15px;
+    resize: vertical;
+    min-height: 76px;
+    width: 100%;
+  }
+  .q-textarea:focus {
+    outline: none;
+    border-color: var(--c-jaune);
+  }
+
+  .q-error {
+    font-family: var(--f-mono);
+    font-size: 12px;
+    color: var(--c-rouge);
   }
 }
