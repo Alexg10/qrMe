@@ -21,6 +21,10 @@ create table public.cards (
   email       text,
   website     text,
   address     text,
+  linkedin    text,                                    -- réseaux : pseudo ou lien complet
+  instagram   text,
+  youtube     text,
+  twitch      text,
   color       text not null default 'jaune'
               check (color in ('jaune', 'vert', 'bleu', 'lilas', 'rouge', 'papier', 'noir')),
   layout      text not null default 'affiche'

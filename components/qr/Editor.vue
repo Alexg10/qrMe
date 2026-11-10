@@ -112,6 +112,22 @@ async function copyLink() {
           :autocomplete="f.auto"
         >
       </div>
+      <div class="socials full">
+        <span class="q-lbl">Réseaux <span class="opt">· pas affichés sur la carte, visibles une fois scannée</span></span>
+        <div class="soc-grid">
+          <div v-for="s in SOCIALS" :key="s.key" class="q-field">
+            <label :for="`f-${s.key}`">{{ s.label }}</label>
+            <input
+              :id="`f-${s.key}`"
+              v-model="draft[s.key]"
+              :placeholder="s.placeholder"
+              autocapitalize="off"
+              autocorrect="off"
+              spellcheck="false"
+            >
+          </div>
+        </div>
+      </div>
       <div class="q-field full">
         <label for="f-desc">Description <span class="opt">· {{ (draft.description || "").length }}/140</span></label>
         <textarea id="f-desc" v-model="draft.description" rows="2" maxlength="140" />
@@ -187,6 +203,9 @@ async function copyLink() {
 .editor { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 360px); gap: 40px; align-items: start; }
 .form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 16px; }
 .full { grid-column: 1 / -1; }
+.socials { display: grid; gap: 10px; }
+.socials .opt { text-transform: none; letter-spacing: 0; color: var(--faint); }
+.soc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 16px; }
 .choices { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; padding-top: 12px; border-top: 1px solid var(--line); margin-top: 6px; }
 .swatches, .layouts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
 .sw { width: 34px; height: 34px; border: 0; padding: 0; cursor: pointer; position: relative; box-shadow: inset 0 0 0 1px var(--line); }

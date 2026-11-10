@@ -4,7 +4,7 @@ import { useToast } from "@/components/ui/toast/use-toast";
 /* Arrivée depuis le lien de réinitialisation : Supabase ouvre une session, on choisit le nouveau mot de passe. */
 useHead({ title: "Nouveau mot de passe · qrMe" });
 
-const MIN = 6;
+const MIN = 8;
 const { toast } = useToast();
 const supabase = useSupabaseClient();
 const user = useSupabaseUser();
@@ -44,11 +44,11 @@ async function submit() {
     <form v-if="user" class="form" @submit.prevent="submit">
       <div class="q-field">
         <label for="password">Nouveau mot de passe</label>
-        <input id="password" v-model="password" type="password" autocomplete="new-password" :minlength="MIN" required >
+        <AuthPassword id="password" v-model="password" autocomplete="new-password" :minlength="MIN" required />
       </div>
       <div class="q-field">
         <label for="confirm">Confirme-le</label>
-        <input id="confirm" v-model="confirm" type="password" autocomplete="new-password" :minlength="MIN" required >
+        <AuthPassword id="confirm" v-model="confirm" autocomplete="new-password" :minlength="MIN" required />
       </div>
       <p v-if="errorMsg" class="q-error" role="alert">{{ errorMsg }}</p>
       <button type="submit" class="q-pill solid big" :disabled="busy">{{ busy ? "Enregistrement…" : "Enregistrer" }}</button>

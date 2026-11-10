@@ -75,6 +75,7 @@ const rows = computed(() => {
     { k: "E-mail", v: c.email, href: c.email && `mailto:${c.email}` },
     { k: "Site", v: c.website, href: c.website && (/^https?:/.test(c.website) ? c.website : `https://${c.website}`) },
     { k: "Adresse", v: c.address },
+    ...cardSocials(c).map((s) => ({ k: s.label, v: s.handle, href: s.url })),
     { k: "Tags", v: c.tags?.join(", ") },
   ].filter((r) => r.v);
 });

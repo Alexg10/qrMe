@@ -45,7 +45,7 @@ async function submit() {
           <label for="password">Mot de passe</label>
           <NuxtLink :to="{ path: '/forgot', query: email ? { email } : {} }" class="lnk small">Mot de passe oublié ?</NuxtLink>
         </div>
-        <input id="password" v-model="password" type="password" autocomplete="current-password" required >
+        <AuthPassword id="password" v-model="password" autocomplete="current-password" required />
       </div>
       <p v-if="errorMsg" class="q-error" role="alert">{{ errorMsg }}</p>
       <button type="submit" class="q-pill solid big" :disabled="busy">{{ busy ? "Connexion…" : "Se connecter" }}</button>

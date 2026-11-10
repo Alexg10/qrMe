@@ -38,6 +38,7 @@ const rows = computed(() => {
     { k: "E-mail", v: x.email, copy: true },
     { k: "Site", v: x.website, copy: true },
     { k: "Adresse", v: x.address, copy: true },
+    ...cardSocials(x).map((s) => ({ k: s.label, v: s.handle, href: s.url })),
     { k: "Ville", v: x.city },
     { k: "Tags", v: x.tags?.join(", ") },
     { k: props.entry.source === "return" ? "Reçue le" : "Ajoutée le", v: formatDate(props.entry.created_at) + (props.entry.source === "return" ? " · en retour" : "") },
@@ -120,7 +121,8 @@ function onKey(e: KeyboardEvent) {
             <template v-for="r in rows" :key="r.k">
               <dt>{{ r.k }}</dt>
               <dd>
-                <span>{{ r.v }}</span>
+                <a v-if="'href' in r && r.href" :href="r.href" target="_blank" rel="noopener" class="lnk">{{ r.v }}</a>
+                <span v-else>{{ r.v }}</span>
                 <button v-if="r.copy" type="button" class="copy" @click="copy(r.v!)">Copier</button>
               </dd>
             </template>
@@ -170,6 +172,7 @@ dt, dd { margin: 0; padding: 10px 0; border-bottom: 1px solid var(--line); }
 dt { font-family: var(--f-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mute); padding-right: 20px; padding-top: 13px; }
 dd { overflow-wrap: anywhere; display: flex; justify-content: space-between; gap: 10px; align-items: center; }
 .copy { flex: none; border: 1px solid var(--line); background: transparent; border-radius: 99px; font-family: var(--f-mono); font-size: 11px; padding: 2px 9px; cursor: pointer; color: var(--mute); }
+.lnk { color: var(--paper); text-decoration: underline; text-underline-offset: 3px; }
 .copy:hover { color: var(--paper); border-color: var(--paper); }
 .note-box { margin-top: 22px; display: grid; gap: 8px; }
 .opt { text-transform: none; letter-spacing: 0; color: var(--faint); }

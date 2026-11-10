@@ -12,7 +12,8 @@ const NAV = [
   { to: "/dashboard/scanner", icon: ScanLine, label: "Scanner", sub: "Ajouter une carte" },
   { to: "/dashboard/collection", icon: Layers, label: "Collection", badge: true },
   { to: "/dashboard/cards", icon: WalletCards, label: "Mes cartes" },
-  { to: "/dashboard/stats", icon: ChartColumn, label: "Stats", sub: "Scans et ajouts" },
+  // En mobile, Stats passe dans le menu Compte pour garder 5 onglets.
+  { to: "/dashboard/stats", icon: ChartColumn, label: "Stats", sub: "Scans et ajouts", desktopOnly: true },
 ];
 const isActive = (item: (typeof NAV)[number]) =>
   item.exact ? route.path === item.to : route.path.startsWith(item.to);
@@ -23,6 +24,13 @@ const initials = computed(() => {
 });
 
 const menuOpen = ref(false);
+watch(() => route.fullPath, () => (menuOpen.value = false));
+const me = ref<HTMLElement>();
+function onDocClick(e: MouseEvent) {
+  if (menuOpen.value && !me.value?.contains(e.target as Node)) menuOpen.value = false;
+}
+onMounted(() => document.addEventListener("click", onDocClick));
+onBeforeUnmount(() => document.removeEventListener("click", onDocClick));
 async function logout() {
   await supabase.auth.signOut();
   useState("my-cards").value = [];
@@ -52,9 +60,11 @@ onMounted(() => {
           :to="item.to"
           :aria-label="item.label"
           :aria-current="isActive(item) ? 'page' : undefined"
+          :class="{ 'desk-only': item.desktopOnly }"
         >
           <component :is="item.icon" :size="22" :stroke-width="2" aria-hidden="true" />
           <span v-if="item.badge && entries.length" class="badge">{{ entries.length }}</span>
+          <span class="lbl" aria-hidden="true">{{ item.label }}</span>
           <span class="tip">{{ item.label }}<small v-if="item.sub">{{ item.sub }}</small></span>
         </NuxtLink>
       </nav>
@@ -62,12 +72,21 @@ onMounted(() => {
         <Plus :size="22" :stroke-width="2" aria-hidden="true" />
         <span class="tip">Nouvelle carte</span>
       </NuxtLink>
-      <div class="me">
-        <button type="button" class="av" :aria-expanded="menuOpen" aria-label="Mon compte" @click="menuOpen = !menuOpen">
-          {{ initials }}
+      <div ref="me" class="me">
+        <button
+          type="button"
+          class="av-btn"
+          :class="{ on: menuOpen || route.path.startsWith('/dashboard/stats') }"
+          :aria-expanded="menuOpen"
+          aria-label="Mon compte"
+          @click="menuOpen = !menuOpen"
+        >
+          <span class="av">{{ initials }}</span>
+          <span class="lbl" aria-hidden="true">Compte</span>
         </button>
         <div v-if="menuOpen" class="menu">
           <span class="q-note">{{ user?.email }}</span>
+          <NuxtLink to="/dashboard/stats" class="q-pill mob-only"><ChartColumn aria-hidden="true" />Stats · scans et ajouts</NuxtLink>
           <button type="button" class="q-pill" @click="logout"><LogOut aria-hidden="true" />Se déconnecter</button>
         </div>
       </div>
@@ -116,8 +135,10 @@ onMounted(() => {
 .nav a:hover .tip, .nav a:focus-visible .tip, .new-btn:hover .tip, .new-btn:focus-visible .tip { opacity: 1; translate: 0 -50%; }
 .side :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .me { margin-top: auto; position: relative; }
+.av-btn { border: 0; padding: 0; background: none; cursor: pointer; display: grid; justify-items: center; gap: 4px; color: var(--ink); }
+.lbl, .mob-only { display: none; }
 .av {
-  width: 36px; height: 36px; display: grid; place-content: center; border: 0; cursor: pointer;
+  width: 36px; height: 36px; display: grid; place-content: center;
   background: var(--ink); color: var(--c-jaune); font-family: var(--f-display); font-weight: 900; font-stretch: 70%; font-size: 15px;
 }
 .menu {
@@ -136,9 +157,24 @@ main > :deep(*) { max-width: 1180px; }
     position: fixed; inset: auto 0 0 0; top: auto; height: auto; flex-direction: row; justify-content: space-around; gap: 4px;
     padding: 8px max(12px, env(safe-area-inset-right, 0px)) calc(8px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
   }
-  .nav { flex-direction: row; gap: 4px; }
-  .nav a, .new-btn { width: 42px; height: 42px; }
-  .logo, .tip { display: none; }
+  /* 5 onglets avec libellé : SHOWme, Scanner, Collection, Mes cartes, Compte. */
+  .side { justify-content: stretch; gap: 0; padding-top: 6px; }
+  .nav { display: contents; }
+  .nav a, .av-btn, .me { flex: 1 1 0; min-width: 0; }
+  .nav a, .av-btn {
+    width: auto; height: 54px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  }
+  .nav a[aria-current="page"], .av-btn.on { background: var(--ink); color: var(--c-jaune); }
+  .av-btn.on .av { background: var(--c-jaune); color: var(--ink); }
+  .av { width: 24px; height: 24px; font-size: 11px; }
+  .lbl {
+    display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font-family: var(--f-display); font-weight: 800; font-stretch: 80%; font-size: 11px; text-transform: uppercase; letter-spacing: 0.02em; line-height: 1;
+  }
+  .badge { top: 4px; right: calc(50% - 22px); }
+  .logo, .tip, .new-btn, .nav a.desk-only { display: none; }
+  .av-btn { width: 100%; }
+  .mob-only { display: inline-flex; }
   .me { margin-top: 0; }
   .menu { left: auto; right: 0; bottom: calc(100% + 12px); }
   main {

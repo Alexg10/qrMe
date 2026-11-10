@@ -17,6 +17,10 @@ export interface Card {
   phone: string | null;
   email: string | null;
   website: string | null;
+  linkedin: string | null;
+  instagram: string | null;
+  youtube: string | null;
+  twitch: string | null;
   address: string | null;
   color: CardColor;
   layout: CardLayout;
@@ -53,9 +57,53 @@ export const CARD_LAYOUTS: { value: CardLayout; label: string }[] = [
 
 export const MAX_TAGS = 5;
 
+/** Réseaux sociaux : on accepte un pseudo (@nom) ou un lien complet. Pas affichés sur la carte, seulement une fois partagée. */
+export const SOCIALS = [
+  { key: "linkedin", label: "LinkedIn", base: "https://www.linkedin.com/in/", placeholder: "prenom-nom ou lien" },
+  { key: "instagram", label: "Instagram", base: "https://www.instagram.com/", placeholder: "@pseudo" },
+  { key: "youtube", label: "YouTube", base: "https://www.youtube.com/@", placeholder: "@chaine" },
+  { key: "twitch", label: "Twitch", base: "https://www.twitch.tv/", placeholder: "pseudo" },
+] as const;
+export type SocialKey = (typeof SOCIALS)[number]["key"];
+
+/** Lien complet vers le profil. */
+export function socialUrl(key: SocialKey, value?: string | null) {
+  const v = (value || "").trim();
+  if (!v) return "";
+  if (/^https?:\/\//i.test(v)) return v;
+  if (/^(www\.)?[a-z0-9-]+(\.[a-z0-9-]+)+\//i.test(v)) return `https://${v}`;
+  const base = SOCIALS.find((s) => s.key === key)!.base;
+  return base + encodeURI(v.replace(/^@/, "").replace(/^in\//, ""));
+}
+
+/** Version courte à afficher : @pseudo, ou le chemin du lien. */
+export function socialHandle(key: SocialKey, value?: string | null) {
+  const v = (value || "").trim();
+  if (!v) return "";
+  try {
+    let path = decodeURI(new URL(socialUrl(key, v)).pathname).replace(/^\/+|\/+$/g, "");
+    if (key === "linkedin") path = path.replace(/^in\//, "");
+    if (key === "instagram" && path && !path.includes("/")) path = `@${path}`;
+    return path || v;
+  } catch {
+    return v;
+  }
+}
+
+/** Réseaux renseignés d'une carte, dans l'ordre d'affichage. */
+export function cardSocials(c: Partial<Card>) {
+  return SOCIALS.filter((s) => (c[s.key] || "").trim()).map((s) => ({
+    key: s.key,
+    label: s.label,
+    url: socialUrl(s.key, c[s.key]),
+    handle: socialHandle(s.key, c[s.key]),
+  }));
+}
+
 export const EDITABLE_FIELDS = [
   "label", "first_name", "last_name", "job", "description", "tags",
-  "city", "phone", "email", "website", "address", "color", "layout",
+  "city", "phone", "email", "website", "address",
+  "linkedin", "instagram", "youtube", "twitch", "color", "layout",
 ] as const;
 
 export type CardDraft = Pick<Card, (typeof EDITABLE_FIELDS)[number]>;
@@ -63,7 +111,8 @@ export type CardDraft = Pick<Card, (typeof EDITABLE_FIELDS)[number]>;
 export function emptyDraft(): CardDraft {
   return {
     label: "Ma carte", first_name: "", last_name: "", job: "", description: "", tags: [],
-    city: "", phone: "", email: "", website: "", address: "", color: "jaune", layout: "affiche",
+    city: "", phone: "", email: "", website: "", address: "",
+    linkedin: "", instagram: "", youtube: "", twitch: "", color: "jaune", layout: "affiche",
   };
 }
 
@@ -128,6 +177,7 @@ export function toVcard(c: Card, note?: string | null) {
     c.phone && `TEL;TYPE=CELL:${c.phone}`,
     c.email && `EMAIL:${c.email}`,
     c.website && `URL:${c.website}`,
+    ...cardSocials(c).map((s) => `X-SOCIALPROFILE;TYPE=${s.key}:${s.url}`),
     (c.address || c.city) && `ADR:;;${vEsc(c.address || "")};${vEsc(c.city || "")};;;`,
     note && `NOTE:${vEsc(note)}`,
     `X-QRME:${cardUrl(c.slug)}`,
@@ -141,9 +191,9 @@ const csvCell = (v: unknown) => {
 };
 
 export function toCsv(entries: CollectionEntry[]) {
-  const head = ["Prénom", "Nom", "Titre", "Ville", "Téléphone", "E-mail", "Site", "Adresse", "Tags", "Note", "Favori", "Ajoutée le", "Lien"];
+  const head = ["Prénom", "Nom", "Titre", "Ville", "Téléphone", "E-mail", "Site", "Adresse", ...SOCIALS.map((s) => s.label), "Tags", "Note", "Favori", "Ajoutée le", "Lien"];
   const rows = entries.map(({ card: c, note, is_favorite, created_at }) => [
-    c.first_name, c.last_name, c.job, c.city, c.phone, c.email, c.website, c.address,
+    c.first_name, c.last_name, c.job, c.city, c.phone, c.email, c.website, c.address, ...SOCIALS.map((s) => socialUrl(s.key, c[s.key])),
     c.tags.join(", "), note, is_favorite ? "oui" : "", new Date(created_at).toLocaleDateString("fr-FR"), cardUrl(c.slug),
   ]);
   return [head, ...rows].map((r) => r.map(csvCell).join(",")).join("\n");

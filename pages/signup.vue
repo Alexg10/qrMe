@@ -38,7 +38,7 @@ async function submit() {
       </div>
       <div class="q-field">
         <label for="password">Mot de passe <span class="opt">· 8 caractères minimum</span></label>
-        <input id="password" v-model="password" type="password" autocomplete="new-password" minlength="8" required >
+        <AuthPassword id="password" v-model="password" autocomplete="new-password" minlength="8" required />
       </div>
       <p v-if="errorMsg" class="q-error" role="alert">{{ errorMsg }}</p>
       <button type="submit" class="q-pill solid big" :disabled="busy">{{ busy ? "Création…" : "Créer mon compte" }}</button>
