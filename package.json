@@ -22,8 +22,10 @@
     "@vueuse/core": "^11.3.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "jsqr": "1.4.0",
     "lucide-vue-next": "^0.460.0",
     "nuxt": "^3.14.1592",
+    "qrcode-generator": "1.4.4",
     "radix-vue": "^1.9.10",
     "shadcn-nuxt": "^0.11.3",
     "tailwind-merge": "^2.5.4",
@@ -37,9 +39,11 @@
     "@iconify-json/radix-icons": "^1.2.1",
     "@iconify/vue": "^4.1.2",
     "@nuxtjs/tailwindcss": "^6.12.2",
+    "@vite-pwa/nuxt": "0.10.6",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.15",
     "typescript": "^5.6.3"
-  }
+  },
+  "packageManager": "pnpm@10.28.2"
 }

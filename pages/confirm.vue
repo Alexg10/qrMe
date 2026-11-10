@@ -1,28 +1,35 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+/* Retour du lien de confirmation e-mail : le module Supabase ouvre la session, on redirige ensuite. */
+useHead({ title: "Confirmation · qrMe" });
+
+const user = useSupabaseUser();
+const route = useRoute();
+const cookieRedirect = useCookie<string | null>("sb-redirect-path");
+
+const target = computed(() => {
+  const r = String(route.query.redirect || cookieRedirect.value || "");
+  return r.startsWith("/") && !r.startsWith("//") ? r : "/dashboard";
+});
+
+watch(
+  user,
+  (u) => {
+    if (!u) return;
+    cookieRedirect.value = null;
+    navigateTo(target.value, { replace: true });
+  },
+  { immediate: true },
+);
+</script>
 
 <template>
-  <div class="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 lg:h-screen">
-    <div class="flex items-center justify-center">
-      <div class="mx-auto grid w-[450px] gap-6">
-        <div class="grid gap-2 text-center">
-          <h1 class="text-3xl font-bold">Confirmed</h1>
-          <p class="text-balance text-muted-foreground">
-            Your account has been confirmed. You can now login.
-          </p>
-
-          <NuxtLink to="/login" class="w-full bg-[white] text-black">
-            <Button class="w-full"> Login </Button>
-          </NuxtLink>
-        </div>
-      </div>
-    </div>
-    <div class="hidden bg-muted lg:block h-screen overflow-hidden">
-      <NuxtImg
-        fit="cover"
-        src="https://images.unsplash.com/photo-1707906799973-0437e0accfab?q=80&w=2187&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        alt="Image"
-        class="h-screen w-full object-cover"
-      />
-    </div>
-  </div>
+  <AuthShell title="Compte confirmé" subtitle="Connexion en cours…">
+    <p class="q-note">
+      Si rien ne se passe, <NuxtLink :to="{ path: '/login', query: route.query }" class="lnk">connecte-toi ici</NuxtLink>.
+    </p>
+  </AuthShell>
 </template>
+
+<style scoped>
+.lnk { color: var(--paper); text-decoration: underline; text-underline-offset: 3px; }
+</style>

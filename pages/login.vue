@@ -1,34 +1,61 @@
 <script setup lang="ts">
-import FormHeader from "@/components/form/FormHeader.vue";
-import LoginForm from "@/components/form/LoginForm.vue";
+useHead({ title: "Connexion · qrMe" });
+
+const supabase = useSupabaseClient();
+const user = useSupabaseUser();
+const route = useRoute();
+const email = ref("");
+const password = ref("");
+const busy = ref(false);
+const errorMsg = ref("");
+
+/* Retour après connexion : ?redirect=/c/abc (page publique) ou /dashboard. */
+const target = computed(() => {
+  const r = String(route.query.redirect || "");
+  return r.startsWith("/") && !r.startsWith("//") ? r : "/dashboard";
+});
+
+watch(user, (u) => u && navigateTo(target.value), { immediate: true });
+
+async function submit() {
+  busy.value = true;
+  errorMsg.value = "";
+  const { error } = await supabase.auth.signInWithPassword({ email: email.value.trim(), password: password.value });
+  busy.value = false;
+  if (error) {
+    errorMsg.value =
+      error.message === "Invalid login credentials"
+        ? "E-mail ou mot de passe incorrect."
+        : error.message === "Email not confirmed"
+          ? "Confirme d'abord ton adresse : clique sur le lien reçu par e-mail."
+          : error.message;
+  }
+}
 </script>
 
 <template>
-  <div class="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
-    <div class="flex items-center justify-center py-12">
-      <div class="mx-auto grid w-[350px] gap-6">
-        <FormHeader
-          title="Login"
-          description="Enter your email and password to login"
-        />
-        <LoginForm />
-        <Separator />
-        <Button variant="outline" class="w-full"> Login with Google </Button>
-        <div class="mt-4 text-center text-sm">
-          Don't have an account?
-          <NuxtLink href="/signup" class="underline"> Sign up </NuxtLink>
-        </div>
+  <AuthShell title="Connexion" subtitle="Retrouve tes cartes et ta collection.">
+    <form class="form" @submit.prevent="submit">
+      <div class="q-field">
+        <label for="email">E-mail</label>
+        <input id="email" v-model="email" type="email" autocomplete="email" required >
       </div>
-    </div>
-    <div class="hidden bg-muted lg:block">
-      <NuxtImg
-        fit="cover"
-        src="https://images.unsplash.com/photo-1707906799973-0437e0accfab?q=80&w=2187&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-        alt="Image"
-        width="1920"
-        height="1080"
-        class="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-      />
-    </div>
-  </div>
+      <div class="q-field">
+        <label for="password">Mot de passe</label>
+        <input id="password" v-model="password" type="password" autocomplete="current-password" required >
+      </div>
+      <p v-if="errorMsg" class="q-error" role="alert">{{ errorMsg }}</p>
+      <button type="submit" class="q-pill solid big" :disabled="busy">{{ busy ? "Connexion…" : "Se connecter" }}</button>
+    </form>
+    <p class="q-note">
+      Pas encore de compte ?
+      <NuxtLink :to="{ path: '/signup', query: route.query }" class="lnk">Créer un compte</NuxtLink>
+    </p>
+  </AuthShell>
 </template>
+
+<style scoped>
+.form { display: grid; gap: 18px; justify-items: stretch; }
+.form .q-pill { justify-self: start; }
+.lnk { color: var(--paper); text-decoration: underline; text-underline-offset: 3px; }
+</style>

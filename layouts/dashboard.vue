@@ -1,278 +1,149 @@
 <script setup lang="ts">
-import {
-  CircleUser,
-  Home,
-  LineChart,
-  Package,
-  Package2,
-  PanelLeft,
-  Settings,
-  ShoppingCart,
-  WalletCards,
-  CreditCard,
-  Users2,
-} from "lucide-vue-next";
-import { Icon } from "@iconify/vue";
+import { QrCode, ScanLine, Layers, WalletCards, ChartColumn, Plus, LogOut } from "lucide-vue-next";
 
-import Breadcrumb from "@/components/dashboard/Breadcrumb.vue";
-import { Button } from "@/components/ui/button";
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-const router = useRouter();
-const colorMode = useColorMode();
+const route = useRoute();
 const supabase = useSupabaseClient();
-const config = useRuntimeConfig();
-const baseUrl = config.public.baseURL;
+const user = useSupabaseUser();
+const { entries, loaded: collLoaded, load: loadCollection } = useCollection();
+const { load: loadCards } = useMyCards();
 
-onMounted(() => {
-  console.log(baseUrl);
-  console.log(router.currentRoute.value.path);
+const NAV = [
+  { to: "/dashboard", icon: QrCode, label: "SHOWme", sub: "Montrer ma carte", exact: true },
+  { to: "/dashboard/scanner", icon: ScanLine, label: "Scanner", sub: "Ajouter une carte" },
+  { to: "/dashboard/collection", icon: Layers, label: "Collection", badge: true },
+  { to: "/dashboard/cards", icon: WalletCards, label: "Mes cartes" },
+  { to: "/dashboard/stats", icon: ChartColumn, label: "Stats", sub: "Scans et ajouts" },
+];
+const isActive = (item: (typeof NAV)[number]) =>
+  item.exact ? route.path === item.to : route.path.startsWith(item.to);
+
+const initials = computed(() => {
+  const email = user.value?.email || "";
+  return email.slice(0, 2).toUpperCase() || "QR";
 });
 
-const handleLogout = async () => {
+const menuOpen = ref(false);
+async function logout() {
   await supabase.auth.signOut();
-  router.push("/");
-};
+  useState("my-cards").value = [];
+  useState("collection").value = [];
+  try {
+    localStorage.removeItem("qrme-my-cards");
+  } catch {
+    /* rien */
+  }
+  await navigateTo("/login");
+}
+
+onMounted(() => {
+  loadCards();
+  if (!collLoaded.value) loadCollection().catch(() => {});
+});
 </script>
 
 <template>
-  <div class="flex min-h-screen w-full flex-col bg-muted/40">
-    <aside
-      class="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex"
-    >
-      <nav class="flex flex-col items-center gap-4 px-2 sm:py-5">
-        <Tooltip>
-          <TooltipTrigger as-child>
-            <NuxtLink
-              to="/dashboard"
-              :class="
-                router.currentRoute.value.path === '/dashboard'
-                  ? 'bg-primary text-primary-foreground hover:text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-              "
-              class="flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:text-foreground md:h-8 md:w-8"
-            >
-              <Home class="h-5 w-5" />
-              <span class="sr-only">Dashboard</span>
-            </NuxtLink>
-          </TooltipTrigger>
-          <TooltipContent side="right"> Dashboard </TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger as-child>
-            <NuxtLink
-              to="/dashboard/cards/create"
-              :class="
-                router.currentRoute.value.path === '/dashboard/cards/create' ||
-                router.currentRoute.value.path === '/dashboard/cards'
-                  ? 'bg-primary text-primary-foreground hover:text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-              "
-              class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8 hover:bg-accent"
-            >
-              <CreditCard class="h-5 w-5" />
-              <span class="sr-only">Cards</span>
-            </NuxtLink>
-          </TooltipTrigger>
-          <TooltipContent side="right">Cards</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger as-child>
-            <NuxtLink
-              to="/dashboard/wallet"
-              :class="
-                router.currentRoute.value.path === '/dashboard/wallet'
-                  ? 'bg-primary text-primary-foreground hover:text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-              "
-              class="flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:text-foreground md:h-8 md:w-8"
-            >
-              <WalletCards class="h-5 w-5" />
-              <span class="sr-only">Wallet</span>
-            </NuxtLink>
-          </TooltipTrigger>
-          <TooltipContent side="right"> Wallet </TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger as-child>
-            <NuxtLink
-              to="/dashboard/profile"
-              :class="
-                router.currentRoute.value.path === '/dashboard/profile'
-                  ? 'bg-primary text-primary-foreground hover:text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-              "
-              class="flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:text-foreground md:h-8 md:w-8"
-            >
-              <Users2 class="h-5 w-5" />
-              <span class="sr-only">Profil</span>
-            </NuxtLink>
-          </TooltipTrigger>
-          <TooltipContent side="right"> Profil </TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger as-child>
-            <NuxtLink
-              to="/dashboard/analytics"
-              :class="
-                router.currentRoute.value.path === '/dashboard/analytics'
-                  ? 'bg-primary text-primary-foreground hover:text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-accent'
-              "
-              class="flex h-9 w-9 items-center justify-center rounded-lg transition-colors hover:text-foreground md:h-8 md:w-8"
-            >
-              <LineChart class="h-5 w-5" />
-              <span class="sr-only">Analytics</span>
-            </NuxtLink>
-          </TooltipTrigger>
-          <TooltipContent side="right"> Analytics </TooltipContent>
-        </Tooltip>
-      </nav>
-      <nav class="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
-        <Tooltip>
-          <TooltipTrigger as-child>
-            <a
-              href="#"
-              class="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-            >
-              <Settings class="h-5 w-5" />
-              <span class="sr-only">Settings</span>
-            </a>
-          </TooltipTrigger>
-          <TooltipContent side="right"> Settings </TooltipContent>
-        </Tooltip>
-      </nav>
-    </aside>
-    <div class="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
-      <header
-        class="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6"
-      >
-        <Sheet>
-          <SheetTrigger as-child>
-            <Button size="icon" variant="outline" class="sm:hidden">
-              <PanelLeft class="h-5 w-5" />
-              <span class="sr-only">Toggle Menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" class="sm:max-w-xs">
-            <nav class="grid gap-6 text-lg font-medium">
-              <a
-                href="#"
-                class="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
-              >
-                <Package2
-                  class="h-5 w-5 transition-all group-hover:scale-110"
-                />
-                <span class="sr-only">Acme Inc</span>
-              </a>
-              <a
-                href="#"
-                class="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-              >
-                <Home class="h-5 w-5" />
-                Dashboard
-              </a>
-              <a
-                href="#"
-                class="flex items-center gap-4 px-2.5 text-foreground"
-              >
-                <ShoppingCart class="h-5 w-5" />
-                Orders
-              </a>
-              <a
-                href="#"
-                class="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-              >
-                <Package class="h-5 w-5" />
-                Products
-              </a>
-              <a
-                href="#"
-                class="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-              >
-                <Users2 class="h-5 w-5" />
-                Customers
-              </a>
-              <a
-                href="#"
-                class="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-              >
-                <LineChart class="h-5 w-5" />
-                Settings
-              </a>
-            </nav>
-          </SheetContent>
-        </Sheet>
-        <div
-          class="flex items-center gap-4 lg:justify-between w-full justify-end"
+  <div class="app">
+    <aside class="side">
+      <NuxtLink class="logo" to="/dashboard" aria-label="qrMe, accueil"><i /><i /></NuxtLink>
+      <nav class="nav" aria-label="Dashboard">
+        <NuxtLink
+          v-for="item in NAV"
+          :key="item.to"
+          :to="item.to"
+          :aria-label="item.label"
+          :aria-current="isActive(item) ? 'page' : undefined"
         >
-          <Breadcrumb />
-          <div class="flex items-center gap-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger as-child>
-                <Button variant="outline">
-                  <Icon
-                    icon="radix-icons:moon"
-                    class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
-                  />
-                  <Icon
-                    icon="radix-icons:sun"
-                    class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
-                  />
-                  <span class="sr-only">Toggle theme</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem @click="colorMode.preference = 'light'">
-                  Light
-                </DropdownMenuItem>
-                <DropdownMenuItem @click="colorMode.preference = 'dark'">
-                  Dark
-                </DropdownMenuItem>
-                <DropdownMenuItem @click="colorMode.preference = 'system'">
-                  System
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <DropdownMenu>
-              <DropdownMenuTrigger as-child>
-                <Button variant="secondary" size="icon" class="rounded-full">
-                  <CircleUser class="h-5 w-5" />
-                  <span class="sr-only">Toggle user menu</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Settings</DropdownMenuItem>
-                <DropdownMenuItem>Support</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem @click="handleLogout"
-                  >Logout</DropdownMenuItem
-                >
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <component :is="item.icon" :size="22" :stroke-width="2" aria-hidden="true" />
+          <span v-if="item.badge && entries.length" class="badge">{{ entries.length }}</span>
+          <span class="tip">{{ item.label }}<small v-if="item.sub">{{ item.sub }}</small></span>
+        </NuxtLink>
+      </nav>
+      <NuxtLink class="new-btn" to="/dashboard/cards/new" aria-label="Nouvelle carte">
+        <Plus :size="22" :stroke-width="2" aria-hidden="true" />
+        <span class="tip">Nouvelle carte</span>
+      </NuxtLink>
+      <div class="me">
+        <button type="button" class="av" :aria-expanded="menuOpen" aria-label="Mon compte" @click="menuOpen = !menuOpen">
+          {{ initials }}
+        </button>
+        <div v-if="menuOpen" class="menu">
+          <span class="q-note">{{ user?.email }}</span>
+          <button type="button" class="q-pill" @click="logout"><LogOut aria-hidden="true" />Se déconnecter</button>
         </div>
-      </header>
-      <main class="p-4 sm:px-6 sm:py-0">
-        <slot />
-      </main>
-    </div>
+      </div>
+    </aside>
+
+    <main>
+      <slot />
+    </main>
   </div>
 </template>
+
+<style scoped>
+/* Rail d'icônes jaune collé au bord gauche (desktop), barre d'onglets en bas (mobile). */
+.app { display: grid; grid-template-columns: calc(72px + env(safe-area-inset-left, 0px)) minmax(0, 1fr); min-height: 100vh; }
+.side {
+  position: sticky; top: 0; height: 100vh; align-self: start; z-index: 20;
+  display: flex; flex-direction: column; align-items: center; gap: 22px;
+  padding-block: calc(20px + env(safe-area-inset-top, 0px)) 20px; padding-left: env(safe-area-inset-left, 0px);
+  background: var(--c-jaune); color: var(--ink);
+}
+.logo { display: flex; gap: 4px; padding: 4px; }
+.logo i { display: block; width: 14px; height: 14px; background: var(--ink); }
+.logo i + i { background: transparent; border: 3.5px solid var(--ink); }
+.nav { display: flex; flex-direction: column; gap: 6px; }
+.nav a, .new-btn {
+  position: relative; width: 46px; height: 46px; display: grid; place-content: center;
+  color: var(--ink); transition: background 0.15s ease, color 0.15s ease;
+}
+.nav a:hover { background: rgb(13 13 11 / 0.12); }
+.nav a[aria-current="page"] { background: var(--ink); color: var(--c-jaune); }
+.new-btn { border: 2px solid var(--ink); border-radius: 99px; width: 42px; height: 42px; }
+.new-btn:hover, .new-btn.router-link-active { background: var(--ink); color: var(--c-jaune); }
+.badge {
+  position: absolute; top: 3px; right: 1px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 99px;
+  background: var(--ink); color: var(--c-jaune); font-family: var(--f-mono); font-size: 10px; line-height: 18px; text-align: center;
+  box-shadow: 0 0 0 2px var(--c-jaune);
+}
+.nav a[aria-current="page"] .badge { background: var(--c-jaune); color: var(--ink); box-shadow: 0 0 0 2px var(--ink); }
+.tip {
+  position: absolute; left: calc(100% + 14px); top: 50%; translate: -4px -50%; white-space: nowrap; pointer-events: none;
+  background: var(--paper); color: var(--ink); padding: 6px 10px; opacity: 0; transition: opacity 0.15s ease, translate 0.15s ease;
+  font-family: var(--f-display); font-weight: 800; font-stretch: 80%; font-size: 13px; text-transform: uppercase; letter-spacing: 0.02em; line-height: 1;
+}
+.tip::before { content: ""; position: absolute; right: 100%; top: 50%; translate: 0 -50%; border: 5px solid transparent; border-right-color: var(--paper); }
+.tip small { display: block; margin-top: 3px; font-family: var(--f-mono); font-weight: 400; font-size: 11px; text-transform: none; letter-spacing: 0; color: var(--faint); }
+.nav a:hover .tip, .nav a:focus-visible .tip, .new-btn:hover .tip, .new-btn:focus-visible .tip { opacity: 1; translate: 0 -50%; }
+.side :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.me { margin-top: auto; position: relative; }
+.av {
+  width: 36px; height: 36px; display: grid; place-content: center; border: 0; cursor: pointer;
+  background: var(--ink); color: var(--c-jaune); font-family: var(--f-display); font-weight: 900; font-stretch: 70%; font-size: 15px;
+}
+.menu {
+  position: absolute; left: calc(100% + 14px); bottom: 0; z-index: 30; display: grid; gap: 10px; padding: 14px;
+  background: var(--ink-2); border: 1px solid var(--line); min-width: 220px;
+}
+main {
+  min-width: 0;
+  padding: calc(28px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 64px 36px;
+}
+main > :deep(*) { max-width: 1180px; }
+
+@media (max-width: 860px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .side {
+    position: fixed; inset: auto 0 0 0; top: auto; height: auto; flex-direction: row; justify-content: space-around; gap: 4px;
+    padding: 8px max(12px, env(safe-area-inset-right, 0px)) calc(8px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px));
+  }
+  .nav { flex-direction: row; gap: 4px; }
+  .nav a, .new-btn { width: 42px; height: 42px; }
+  .logo, .tip { display: none; }
+  .me { margin-top: 0; }
+  .menu { left: auto; right: 0; bottom: calc(100% + 12px); }
+  main {
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  }
+}
+</style>
