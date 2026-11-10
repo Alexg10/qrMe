@@ -137,25 +137,25 @@ const rows = computed(() => {
 .desc { margin: 0; font-size: 17px; max-width: 42ch; }
 dl { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); border-top: 1.5px solid var(--ink); }
 dt, dd { margin: 0; padding: 10px 0; border-bottom: 1px solid rgb(13 13 11 / 0.15); }
-dt { font-family: var(--f-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: #77746a; padding-right: 18px; padding-top: 13px; }
+dt { font-family: var(--f-body); font-size: 13px; font-weight: 500; color: #77746a; padding-right: 18px; padding-top: 13px; }
 dd { overflow-wrap: anywhere; user-select: text; }
 dd a { text-decoration: underline; text-underline-offset: 3px; }
 .cta { display: grid; gap: 10px; }
-.btn { display: block; text-align: center; border-radius: 999px; padding: 13px; font-family: var(--f-display); font-weight: 800; font-stretch: 80%; text-transform: uppercase; font-size: 15px; letter-spacing: 0.02em; cursor: pointer; border: 1.5px solid var(--ink); background: transparent; color: var(--ink); }
+.btn { display: block; text-align: center; border-radius: 999px; padding: 13px; font-family: var(--f-body); font-weight: 600; font-size: 15px; cursor: pointer; border: 1.5px solid var(--ink); background: transparent; color: var(--ink); }
 .btn.main { background: var(--ink); color: var(--paper); }
 .btn.main:disabled { opacity: 0.5; cursor: default; }
 .btn.done { background: var(--c-vert); border-color: var(--c-vert); color: var(--ink); cursor: default; }
 .hint, .mine { margin: 0; font-size: 13px; color: #5d5b54; }
-.err { margin: 0; font-family: var(--f-mono); font-size: 12px; color: #b3261e; }
+.err { margin: 0; font-family: var(--f-body); font-size: 12px; color: #b3261e; }
 .noteform { display: grid; gap: 8px; padding-top: 4px; }
-.noteform label { font-family: var(--f-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: #77746a; }
+.noteform label { font-family: var(--f-body); font-size: 13px; font-weight: 500; color: #77746a; }
 .noteform textarea { border: 1.5px solid var(--ink); background: transparent; color: var(--ink); padding: 10px; font-size: 15px; min-height: 66px; resize: vertical; width: 100%; }
 .noteform textarea:focus { outline: none; box-shadow: 0 0 0 2px var(--c-jaune); }
-.brand { display: inline-flex; align-items: center; gap: 6px; font-family: var(--f-mono); font-size: 11px; color: #77746a; margin-top: 8px; }
+.brand { display: inline-flex; align-items: center; gap: 6px; font-family: var(--f-body); font-size: 11px; color: #77746a; margin-top: 8px; }
 .brand i { width: 10px; height: 10px; background: var(--ink); display: block; }
 .brand i + i { background: transparent; border: 2.5px solid var(--ink); margin-right: 4px; }
 .missing { max-width: 520px; margin: 0 auto; padding-top: 80px; display: grid; gap: 16px; }
-.missing h1 { margin: 0; font-family: var(--f-display); font-weight: 900; font-stretch: 66%; text-transform: uppercase; font-size: 64px; line-height: 0.85; }
+.missing h1 { margin: 0; font-family: var(--f-display); font-weight: var(--w-display); font-size: 64px; line-height: 0.95; letter-spacing: -0.025em; }
 .missing p { margin: 0; }
 .missing .btn { justify-self: start; padding-inline: 22px; }
 @media (max-width: 720px) {

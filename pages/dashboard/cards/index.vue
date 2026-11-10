@@ -49,16 +49,16 @@ onMounted(() => loadStats().catch(() => {}));
 </template>
 
 <style scoped>
-.sup { font-size: 0.26em; font-stretch: 100%; font-weight: 500; vertical-align: top; margin-left: 0.2em; letter-spacing: 0; font-family: var(--f-mono); }
+.sup { font-size: 0.26em; font-weight: 500; vertical-align: top; margin-left: 0.2em; letter-spacing: 0; font-family: var(--f-body); }
 .mine { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 24px; }
 figure { margin: 0; display: grid; gap: 10px; align-content: start; }
 figure.off .tap { opacity: 0.4; }
-figcaption { display: flex; justify-content: space-between; gap: 8px; font-family: var(--f-mono); font-size: 12px; color: var(--mute); }
+figcaption { display: flex; justify-content: space-between; gap: 8px; font-family: var(--f-body); font-size: 12px; color: var(--mute); }
 figcaption b { color: var(--paper); font-weight: 500; }
 .lnk { color: var(--paper); text-decoration: underline; background: none; border: 0; padding: 0; cursor: pointer; font: inherit; }
 .tap { display: block; transition: transform 0.25s ease; }
 .tap:hover { transform: translateY(-6px) rotate(-1deg); }
 .new { aspect-ratio: 55 / 85; border: 1.5px dashed var(--line); display: grid; place-content: center; gap: 8px; text-align: center; color: var(--mute); }
-.new strong { font-family: var(--f-display); font-weight: 900; font-stretch: 66%; font-size: 64px; line-height: 0.8; color: var(--paper); }
+.new strong { font-family: var(--f-display); font-weight: var(--w-display); font-size: 64px; line-height: 0.8; color: var(--paper); }
 .new:hover { border-color: var(--paper); }
 </style>

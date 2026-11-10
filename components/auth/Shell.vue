@@ -37,7 +37,7 @@ const sample = {
   display: flex; flex-direction: column; gap: 48px;
   padding: max(24px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 40px max(24px, env(safe-area-inset-left, 0px));
 }
-.logo { display: flex; align-items: center; gap: 8px; font-family: var(--f-display); font-weight: 900; font-stretch: 75%; font-size: 24px; text-transform: uppercase; }
+.logo { display: flex; align-items: center; gap: 8px; font-family: var(--f-display); font-weight: var(--w-display); font-size: 24px; }
 .logo i { display: block; width: 18px; height: 18px; background: var(--c-jaune); }
 .logo i + i { background: transparent; border: 4px solid var(--c-jaune); }
 .body { display: grid; gap: 22px; max-width: 420px; width: 100%; margin-block: auto; align-self: center; }

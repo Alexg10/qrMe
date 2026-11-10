@@ -23,9 +23,11 @@
     --c-papier: #efece4;
     --c-noir: #1a1a17;
 
-    --f-display: "Archivo", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
-    --f-body: "Archivo", "Helvetica Neue", Arial, sans-serif;
-    --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    /* Grotesque expressive pour les noms et titres, sans sobre pour le reste. Pas de capitales forcées. */
+    --f-display: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+    --f-body: "Rethink Sans", "Helvetica Neue", Arial, sans-serif;
+    --w-display: 700;
+    --s-display: 80%;
 
     /* shadcn */
     --background: 60 4% 5%;
@@ -76,16 +78,15 @@
 }
 
 @layer components {
-  /* Titre de page géant, condensé */
+  /* Titre de page */
   .q-h1 {
     margin: 0;
     font-family: var(--f-display);
-    font-weight: 900;
-    font-stretch: 68%;
-    text-transform: uppercase;
-    font-size: clamp(52px, 8vw, 104px);
-    line-height: 0.84;
-    letter-spacing: -0.02em;
+    font-weight: var(--w-display);
+    font-stretch: var(--s-display);
+    font-size: clamp(48px, 7.4vw, 96px);
+    line-height: 0.92;
+    letter-spacing: -0.025em;
     text-wrap: balance;
   }
   .q-head {
@@ -102,15 +103,14 @@
     color: var(--mute);
   }
   .q-note {
-    font-family: var(--f-mono);
-    font-size: 12px;
+    font-family: var(--f-body);
+    font-size: 13px;
     color: var(--mute);
   }
   .q-lbl {
-    font-family: var(--f-mono);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+    font-family: var(--f-body);
+    font-size: 13px;
+    font-weight: 500;
     color: var(--mute);
   }
 
@@ -124,12 +124,9 @@
     padding: 6px 14px;
     background: transparent;
     color: var(--paper);
-    font-family: var(--f-display);
-    font-weight: 700;
-    font-stretch: 85%;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
+    font-family: var(--f-body);
+    font-weight: 600;
+    font-size: 14px;
     cursor: pointer;
     white-space: nowrap;
     transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
@@ -151,7 +148,7 @@
   }
   .q-pill.big {
     padding: 10px 18px;
-    font-size: 14px;
+    font-size: 15px;
   }
   .q-pill:disabled {
     opacity: 0.55;
@@ -169,10 +166,9 @@
     min-width: 0;
   }
   .q-field label {
-    font-family: var(--f-mono);
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+    font-family: var(--f-body);
+    font-size: 13px;
+    font-weight: 500;
     color: var(--mute);
   }
   .q-field label .opt {
@@ -219,8 +215,8 @@
   }
 
   .q-error {
-    font-family: var(--f-mono);
-    font-size: 12px;
+    font-family: var(--f-body);
+    font-size: 13px;
     color: var(--c-rouge);
   }
 }

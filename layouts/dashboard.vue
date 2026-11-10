@@ -121,17 +121,17 @@ onMounted(() => {
 .new-btn:hover, .new-btn.router-link-active { background: var(--ink); color: var(--c-jaune); }
 .badge {
   position: absolute; top: 3px; right: 1px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 99px;
-  background: var(--ink); color: var(--c-jaune); font-family: var(--f-mono); font-size: 10px; line-height: 18px; text-align: center;
+  background: var(--ink); color: var(--c-jaune); font-family: var(--f-body); font-size: 10px; line-height: 18px; text-align: center;
   box-shadow: 0 0 0 2px var(--c-jaune);
 }
 .nav a[aria-current="page"] .badge { background: var(--c-jaune); color: var(--ink); box-shadow: 0 0 0 2px var(--ink); }
 .tip {
   position: absolute; left: calc(100% + 14px); top: 50%; translate: -4px -50%; white-space: nowrap; pointer-events: none;
   background: var(--paper); color: var(--ink); padding: 6px 10px; opacity: 0; transition: opacity 0.15s ease, translate 0.15s ease;
-  font-family: var(--f-display); font-weight: 800; font-stretch: 80%; font-size: 13px; text-transform: uppercase; letter-spacing: 0.02em; line-height: 1;
+  font-family: var(--f-body); font-weight: 600; font-size: 13px; line-height: 1;
 }
 .tip::before { content: ""; position: absolute; right: 100%; top: 50%; translate: 0 -50%; border: 5px solid transparent; border-right-color: var(--paper); }
-.tip small { display: block; margin-top: 3px; font-family: var(--f-mono); font-weight: 400; font-size: 11px; text-transform: none; letter-spacing: 0; color: var(--faint); }
+.tip small { display: block; margin-top: 3px; font-family: var(--f-body); font-weight: 400; font-size: 11px; text-transform: none; letter-spacing: 0; color: var(--faint); }
 .nav a:hover .tip, .nav a:focus-visible .tip, .new-btn:hover .tip, .new-btn:focus-visible .tip { opacity: 1; translate: 0 -50%; }
 .side :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .me { margin-top: auto; position: relative; }
@@ -139,7 +139,7 @@ onMounted(() => {
 .lbl, .mob-only { display: none; }
 .av {
   width: 36px; height: 36px; display: grid; place-content: center;
-  background: var(--ink); color: var(--c-jaune); font-family: var(--f-display); font-weight: 900; font-stretch: 70%; font-size: 15px;
+  background: var(--ink); color: var(--c-jaune); font-family: var(--f-display); font-weight: var(--w-display); font-size: 15px;
 }
 .menu {
   position: absolute; left: calc(100% + 14px); bottom: 0; z-index: 30; display: grid; gap: 10px; padding: 14px;
@@ -169,7 +169,7 @@ main > :deep(*) { max-width: 1180px; }
   .av { width: 24px; height: 24px; font-size: 11px; }
   .lbl {
     display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    font-family: var(--f-display); font-weight: 800; font-stretch: 80%; font-size: 11px; text-transform: uppercase; letter-spacing: 0.02em; line-height: 1;
+    font-family: var(--f-body); font-weight: 600; font-size: 11px; line-height: 1;
   }
   .badge { top: 4px; right: calc(50% - 22px); }
   .logo, .tip, .new-btn, .nav a.desk-only { display: none; }

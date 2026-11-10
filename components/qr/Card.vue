@@ -51,14 +51,14 @@ watch(() => [c.value.first_name, c.value.last_name, c.value.layout], () => nextT
       <template v-if="(c.layout || 'affiche') === 'affiche'">
         <div class="top-row">
           <div class="marks"><i /><i /></div>
-          <div class="mono">{{ c.city }}</div>
+          <div class="meta">{{ c.city }}</div>
         </div>
         <div>
           <h3 class="disp"><span v-for="l in nameLines" :key="l" class="ln">{{ l }}</span></h3>
           <div v-if="c.job" class="job">{{ c.job }}</div>
         </div>
         <div v-if="tags.length" class="tags"><span v-for="t in tags" :key="t">{{ t }}</span></div>
-        <div v-if="c.website" class="mono">{{ c.website }}</div>
+        <div v-if="c.website" class="meta">{{ c.website }}</div>
         <div class="qr" v-html="qr" />
       </template>
 
@@ -71,7 +71,7 @@ watch(() => [c.value.first_name, c.value.last_name, c.value.layout], () => nextT
           </div>
           <div v-if="c.city" class="city">{{ c.city }}</div>
           <div v-if="tags.length" class="tags"><span v-for="t in tags" :key="t">{{ t }}</span></div>
-          <div class="mono">
+          <div class="meta">
             <template v-for="(l, i) in contact" :key="l"><br v-if="i">{{ l }}</template>
           </div>
           <div class="bottom"><div class="qr" v-html="qr" /></div>
@@ -125,23 +125,19 @@ watch(() => [c.value.first_name, c.value.last_name, c.value.layout], () => nextT
   margin: 0;
   width: 100%;
   font-family: var(--f-display);
-  font-weight: 900;
-  font-stretch: 64%;
-  text-transform: uppercase;
-  letter-spacing: -0.02em;
+  font-weight: var(--w-display);
+  font-stretch: var(--s-display);
+  letter-spacing: -0.035em;
 }
 .disp .ln { display: block; white-space: nowrap; width: max-content; }
-.mono { font-family: var(--f-mono); font-size: 4.9cqw; line-height: 1.3; font-weight: 500; }
+.meta { font-size: 5.2cqw; line-height: 1.25; font-weight: 500; }
 .tags { display: flex; flex-wrap: wrap; gap: 1.6cqw; }
 .tags span {
   border: 0.55cqw solid currentColor;
   border-radius: 99px;
   padding: 0.5cqw 2.8cqw;
-  font-family: var(--f-display);
-  font-weight: 800;
-  font-stretch: 80%;
-  font-size: 4.4cqw;
-  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 4.6cqw;
 }
 
 /* A — Affiche */
@@ -151,15 +147,15 @@ watch(() => [c.value.first_name, c.value.last_name, c.value.layout], () => nextT
 .l-affiche .marks { display: flex; gap: 1.8cqw; flex: none; }
 .l-affiche .marks i { display: block; width: 8cqw; height: 8cqw; background: currentColor; }
 .l-affiche .marks i + i { background: transparent; border: 1.8cqw solid currentColor; }
-.l-affiche .disp { font-size: 19cqw; line-height: 0.82; }
-.l-affiche .job { font-family: var(--f-display); font-weight: 800; font-stretch: 78%; text-transform: uppercase; font-size: 6.4cqw; line-height: 1; margin-top: 2.4cqw; }
+.l-affiche .disp { font-size: 19cqw; line-height: 0.92; }
+.l-affiche .job { font-family: var(--f-body); font-weight: 600; font-size: 6.4cqw; line-height: 1; margin-top: 2.4cqw; }
 /* Le QR prend toute la hauteur restante et reste carré. */
 .l-affiche .ci > .qr { flex: 1 1 0; min-height: 0; display: flex; align-items: flex-end; margin-top: 1cqw; }
 .l-affiche .qr :deep(svg) { height: 100%; width: auto; max-width: 100%; }
 
 /* B — Monogramme */
 .l-mono .ci { padding: 4cqw; display: flex; flex-direction: column; }
-.l-mono .ini { margin: 0 -1cqw 0 0; font-family: var(--f-display); font-weight: 500; font-size: 34cqw; line-height: 0.74; letter-spacing: -0.06em; text-align: right; text-transform: uppercase; }
+.l-mono .ini { margin: 0 -1cqw 0 0; font-family: var(--f-display); font-weight: 500; font-size: 34cqw; line-height: 0.74; letter-spacing: -0.06em; text-align: right; }
 .l-mono .panel { background: var(--ink); color: var(--bg); flex: 1; display: flex; flex-direction: column; padding: 5cqw; gap: 2.6cqw; min-height: 0; }
 .qcard[data-c="noir"] .panel { background: var(--paper); color: var(--ink); }
 .l-mono .panel > * { flex: none; }
@@ -173,11 +169,11 @@ watch(() => [c.value.first_name, c.value.last_name, c.value.layout], () => nextT
 
 /* C — Typo */
 .l-typo .ci { padding: 5.5cqw; display: flex; flex-direction: column; gap: 2.2cqw; }
-.l-typo .disp { font-size: 24cqw; line-height: 0.8; }
+.l-typo .disp { font-size: 24cqw; line-height: 0.9; }
 .l-typo .rule { border-top: 0.7cqw solid currentColor; }
 .l-typo .desc { margin: 0; font-size: 5.2cqw; line-height: 1.15; font-weight: 500; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .l-typo .foot { margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; gap: 3cqw; }
-.l-typo .info { flex: 1; min-width: 0; font-family: var(--f-display); font-weight: 800; font-stretch: 70%; text-transform: uppercase; font-size: 4.8cqw; line-height: 1.02; overflow-wrap: break-word; hyphens: auto; }
+.l-typo .info { flex: 1; min-width: 0; font-weight: 600; font-size: 5cqw; line-height: 1.02; overflow-wrap: break-word; hyphens: auto; }
 .l-typo .info span { display: block; }
 .l-typo .info span + span { margin-top: 2cqw; }
 .l-typo .foot .qr { width: 60cqw; flex: none; margin: 0 -1cqw -1cqw 0; }

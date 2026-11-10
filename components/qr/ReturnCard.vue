@@ -59,7 +59,7 @@ async function send() {
 
 <style scoped>
 .return { border: 1.5px solid currentColor; padding: 14px; display: grid; gap: 8px; justify-items: start; }
-.h { font-family: var(--f-display); font-weight: 900; font-stretch: 70%; text-transform: uppercase; font-size: 20px; line-height: 1; }
+.h { font-family: var(--f-display); font-weight: var(--w-display); font-size: 20px; line-height: 1; }
 p { margin: 0; font-size: 13px; opacity: 0.75; }
 .pick { display: flex; gap: 6px; flex-wrap: wrap; }
 .light .q-pill { border-color: var(--ink); color: var(--ink); }

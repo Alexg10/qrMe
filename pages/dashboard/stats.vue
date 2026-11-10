@@ -162,24 +162,24 @@ function spark(a: number[]) {
 .pick { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
 .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); margin-bottom: 32px; }
 .kpi { background: var(--ink); padding: 16px; display: grid; gap: 6px; min-width: 0; }
-.v { font-family: var(--f-display); font-weight: 900; font-stretch: 66%; font-size: 56px; line-height: 0.9; font-variant-numeric: tabular-nums; }
+.v { font-family: var(--f-display); font-weight: var(--w-display); font-size: 56px; line-height: 0.9; font-variant-numeric: tabular-nums; }
 .chart-h { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
 .chart { position: relative; margin-bottom: 32px; }
 .chart svg { display: block; width: 100%; height: auto; }
-.chart text { fill: var(--mute); font-family: var(--f-mono); font-size: 11px; }
+.chart text { fill: var(--mute); font-family: var(--f-body); font-size: 12px; }
 .grid { stroke: var(--line); stroke-width: 1; }
 .grid.base { stroke: var(--faint); }
 .bar { fill: var(--c-jaune); transition: opacity 0.12s ease; }
 .bar.dim { opacity: 0.4; }
 .tt { position: absolute; pointer-events: none; background: var(--paper); color: var(--ink); padding: 8px 10px; font-size: 12px; line-height: 1.4; white-space: nowrap; transform: translate(-50%, calc(-100% - 10px)); z-index: 2; }
-.tt b { font-family: var(--f-display); font-weight: 800; font-stretch: 80%; text-transform: uppercase; }
+.tt b { font-family: var(--f-body); font-weight: 600; }
 .tbl-wrap { overflow-x: auto; }
 .tbl { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; min-width: 560px; }
-th { font-family: var(--f-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mute); font-weight: 400; text-align: left; padding: 8px; border-bottom: 1.5px solid var(--paper); }
+th { font-family: var(--f-body); font-size: 13px; color: var(--mute); font-weight: 500; text-align: left; padding: 8px; border-bottom: 1.5px solid var(--paper); }
 td { padding: 12px 8px; border-bottom: 1px solid var(--line); }
 .num { text-align: right; }
 tr.sel td { background: var(--ink-2); }
-.cname { display: flex; align-items: center; gap: 10px; font-family: var(--f-display); font-weight: 800; font-stretch: 72%; font-size: 20px; text-transform: uppercase; }
+.cname { display: flex; align-items: center; gap: 10px; font-family: var(--f-display); font-weight: var(--w-display); font-size: 20px; }
 .dot { width: 14px; height: 20px; flex: none; box-shadow: inset 0 0 0 1px var(--line); }
 .spark { display: block; }
 @media (max-width: 700px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

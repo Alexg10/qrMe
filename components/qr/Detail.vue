@@ -164,14 +164,14 @@ function onKey(e: KeyboardEvent) {
 .card-col > :first-child { box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.9); }
 .navs { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 14px; }
 .info { min-width: 0; }
-h2 { margin: 0; font-family: var(--f-display); font-weight: 900; font-stretch: 64%; text-transform: uppercase; font-size: clamp(44px, 7vw, 76px); line-height: 0.84; letter-spacing: -0.02em; overflow-wrap: anywhere; }
-.job { font-family: var(--f-display); font-weight: 700; font-stretch: 85%; text-transform: uppercase; margin-top: 10px; }
+h2 { margin: 0; font-family: var(--f-display); font-weight: var(--w-display); font-size: clamp(44px, 7vw, 76px); line-height: 0.95; letter-spacing: -0.025em; overflow-wrap: anywhere; }
+.job { font-family: var(--f-body); font-weight: 600; margin-top: 10px; }
 .desc { margin: 16px 0 0; max-width: 42ch; }
 dl { margin: 22px 0 0; display: grid; grid-template-columns: auto minmax(0, 1fr); border-top: 1.5px solid var(--paper); }
 dt, dd { margin: 0; padding: 10px 0; border-bottom: 1px solid var(--line); }
-dt { font-family: var(--f-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--mute); padding-right: 20px; padding-top: 13px; }
+dt { font-family: var(--f-body); font-size: 13px; font-weight: 500; color: var(--mute); padding-right: 20px; padding-top: 13px; }
 dd { overflow-wrap: anywhere; display: flex; justify-content: space-between; gap: 10px; align-items: center; }
-.copy { flex: none; border: 1px solid var(--line); background: transparent; border-radius: 99px; font-family: var(--f-mono); font-size: 11px; padding: 2px 9px; cursor: pointer; color: var(--mute); }
+.copy { flex: none; border: 1px solid var(--line); background: transparent; border-radius: 99px; font-family: var(--f-body); font-size: 12px; padding: 2px 9px; cursor: pointer; color: var(--mute); }
 .lnk { color: var(--paper); text-decoration: underline; text-underline-offset: 3px; }
 .copy:hover { color: var(--paper); border-color: var(--paper); }
 .note-box { margin-top: 22px; display: grid; gap: 8px; }

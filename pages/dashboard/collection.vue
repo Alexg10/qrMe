@@ -195,7 +195,7 @@ function exportAs(fmt: "csv" | "vcf") {
 <style scoped>
 .bar { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
 .count-wrap { display: flex; align-items: flex-end; gap: 12px; }
-.count { font-family: var(--f-display); font-weight: 900; font-stretch: 66%; font-size: 72px; line-height: 0.8; }
+.count { font-family: var(--f-display); font-weight: var(--w-display); font-size: 72px; line-height: 0.8; }
 .toggle { display: flex; gap: 6px; flex-wrap: wrap; }
 .exp { position: relative; }
 .exp-menu { position: absolute; right: 0; top: calc(100% + 8px); z-index: 10; display: grid; gap: 8px; padding: 14px; background: var(--ink-2); border: 1px solid var(--line); min-width: 220px; }
@@ -204,7 +204,7 @@ function exportAs(fmt: "csv" | "vcf") {
 .search:focus-within { border-color: var(--paper); }
 .search input { flex: 1; min-width: 0; background: transparent; border: 0; outline: none; font-size: 16px; color: var(--paper); }
 .search input::placeholder { color: var(--faint); }
-.sort { background: var(--ink-2); border: 1.5px solid var(--line); color: var(--paper); padding: 7px 10px; font-family: var(--f-mono); font-size: 12px; }
+.sort { background: var(--ink-2); border: 1.5px solid var(--line); color: var(--paper); padding: 7px 10px; font-family: var(--f-body); font-size: 12px; }
 .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
 .empty { display: grid; gap: 16px; justify-items: start; padding-top: 12px; }
 .empty p { margin: 0; color: var(--mute); }
@@ -221,8 +221,8 @@ function exportAs(fmt: "csv" | "vcf") {
 .slot .fav { position: absolute; top: 8px; right: 8px; width: 34px; height: 34px; background: rgb(13 13 11 / 0.72); color: var(--paper); z-index: 1; }
 .slot .fav[aria-pressed="true"] { color: var(--c-jaune); }
 .cap { display: flex; gap: 8px; align-items: baseline; min-width: 0; }
-.no { flex: none; font-family: var(--f-mono); font-size: 11px; color: var(--mute); font-variant-numeric: tabular-nums; }
-.cap .nm { min-width: 0; font-family: var(--f-display); font-weight: 800; font-stretch: 72%; font-size: 18px; line-height: 1; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.no { flex: none; font-family: var(--f-body); font-size: 12px; color: var(--mute); font-variant-numeric: tabular-nums; }
+.cap .nm { min-width: 0; font-family: var(--f-display); font-weight: var(--w-display); font-size: 18px; line-height: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .has-note { flex: none; color: var(--mute); align-self: center; }
 
 .list { border-top: 1.5px solid var(--paper); }
@@ -232,12 +232,12 @@ function exportAs(fmt: "csv" | "vcf") {
 .row-in { display: grid; grid-template-columns: 40px minmax(0, 1.4fr) minmax(0, 1fr) auto; gap: 16px; align-items: center; }
 .mini { display: block; width: 40px; overflow: hidden; }
 .who { min-width: 0; }
-.who .nm { display: block; font-family: var(--f-display); font-weight: 800; font-stretch: 72%; font-size: 26px; line-height: 0.95; text-transform: uppercase; }
+.who .nm { display: block; font-family: var(--f-display); font-weight: var(--w-display); font-size: 26px; line-height: 1.05; }
 .sub { color: var(--mute); font-size: 13px; }
 .memo { display: block; margin-top: 3px; opacity: 0.75; font-size: 13px; font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .t { display: flex; gap: 6px; flex-wrap: wrap; }
-.t span { font-family: var(--f-mono); font-size: 11px; border: 1px solid var(--line); border-radius: 99px; padding: 2px 8px; }
-time { font-family: var(--f-mono); font-size: 12px; color: var(--mute); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.t span { font-family: var(--f-body); font-size: 12px; border: 1px solid var(--line); border-radius: 99px; padding: 2px 8px; }
+time { font-family: var(--f-body); font-size: 12px; color: var(--mute); font-variant-numeric: tabular-nums; white-space: nowrap; }
 @media (max-width: 520px) {
   .row-in { grid-template-columns: 40px minmax(0, 1fr) auto; }
   .t { display: none; }

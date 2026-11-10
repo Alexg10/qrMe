@@ -43,6 +43,6 @@ The database is created by running `supabase/schema.sql` in the Supabase SQL edi
 
 ## UI conventions
 
-- Design tokens (ink/paper neutrals, card colors `--c-*`, fonts Archivo + IBM Plex Mono) and shared classes (`q-h1`, `q-head`, `q-pill`, `q-field`, `q-textarea`, `q-note`, `q-lbl`) are in `assets/css/main.css`. The app is dark-only; shadcn CSS variables are mapped onto the same palette.
+- Design tokens (ink/paper neutrals, card colors `--c-*`, fonts Bricolage Grotesque (names and titles) + Rethink Sans (everything else); no forced capitals, no mono) and shared classes (`q-h1`, `q-head`, `q-pill`, `q-field`, `q-textarea`, `q-note`, `q-lbl`) are in `assets/css/main.css`. The app is dark-only; shadcn CSS variables are mapped onto the same palette.
 - Component styles are scoped CSS rather than Tailwind utilities. shadcn-vue components in `components/ui/` are generated; only the toast is currently used.
 - Icons: `lucide-vue-next`.

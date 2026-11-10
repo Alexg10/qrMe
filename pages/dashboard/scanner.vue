@@ -215,8 +215,8 @@ video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cov
 .cam-msg { display: grid; gap: 14px; justify-items: center; text-align: center; padding: 24px; color: var(--mute); }
 .cam-msg p { margin: 0; max-width: 32ch; }
 .side { display: grid; gap: 16px; align-content: start; justify-items: start; }
-.fname { margin: 0; font-family: var(--f-display); font-weight: 900; font-stretch: 64%; text-transform: uppercase; font-size: clamp(44px, 6vw, 72px); line-height: 0.84; overflow-wrap: anywhere; }
-.fjob { font-family: var(--f-display); font-weight: 700; font-stretch: 85%; text-transform: uppercase; }
+.fname { margin: 0; font-family: var(--f-display); font-weight: var(--w-display); font-size: clamp(44px, 6vw, 72px); line-height: 0.95; letter-spacing: -0.025em; overflow-wrap: anywhere; }
+.fjob { font-family: var(--f-body); font-weight: 600; }
 .note-box { display: grid; gap: 8px; width: 100%; }
 .opt { text-transform: none; letter-spacing: 0; color: var(--faint); }
 .row, .acts { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }

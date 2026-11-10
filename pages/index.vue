@@ -31,12 +31,12 @@ const samples = [
 <style scoped>
 .home { min-height: 100vh; padding: max(20px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 48px max(16px, env(safe-area-inset-left, 0px)); max-width: 1240px; margin: 0 auto; }
 .top { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
-.logo { display: flex; align-items: center; gap: 8px; font-family: var(--f-display); font-weight: 900; font-stretch: 75%; font-size: 24px; text-transform: uppercase; }
+.logo { display: flex; align-items: center; gap: 8px; font-family: var(--f-display); font-weight: var(--w-display); font-size: 24px; }
 .logo i { display: block; width: 18px; height: 18px; background: var(--c-jaune); }
 .logo i + i { background: transparent; border: 4px solid var(--c-jaune); }
 .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: center; padding-top: 64px; }
 .txt { display: grid; gap: 24px; justify-items: start; }
-h1 { margin: 0; font-family: var(--f-display); font-weight: 900; font-stretch: 64%; text-transform: uppercase; font-size: clamp(64px, 10vw, 136px); line-height: 0.82; letter-spacing: -0.02em; }
+h1 { margin: 0; font-family: var(--f-display); font-weight: var(--w-display); font-size: clamp(60px, 9vw, 124px); line-height: 0.92; letter-spacing: -0.03em; }
 .txt p { margin: 0; max-width: 40ch; color: var(--mute); font-size: 17px; }
 .fan { position: relative; height: min(70vw, 520px); }
 .f { position: absolute; width: 46%; top: 6%; left: calc(8% + var(--i) * 22%); transform: rotate(calc(-8deg + var(--i) * 8deg)) translateY(calc(var(--i) * 4%)); box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.8); }
