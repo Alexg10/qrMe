@@ -12,6 +12,8 @@ export default defineNuxtConfig({
     public: {
       // Domaine encodé dans les QR. Vide = le domaine courant (pratique pour les previews Vercel).
       baseURL: process.env.BASE_URL || "",
+      // ID de mesure Google Analytics 4 (G-XXXXXXXXXX). Vide = pas de suivi.
+      gaId: process.env.GA_ID || "",
     },
   },
   app: {

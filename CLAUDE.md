@@ -24,7 +24,10 @@ There is no test suite. A build needs `SUPABASE_URL` / `SUPABASE_KEY` set (dummy
 SUPABASE_URL=https://<project>.supabase.co
 SUPABASE_KEY=<anon public key>
 BASE_URL=https://<public domain>   # optional: domain encoded in QR codes; defaults to the current origin
+GA_ID=G-XXXXXXXXXX                 # optional: Google Analytics 4 measurement ID; no tracking when unset
 ```
+
+Analytics: `plugins/gtag.client.ts` loads gtag.js only when `GA_ID` is set and sends a `page_view` on each client-side route change (query-only changes such as `?carte=` are ignored).
 
 The database is created by running `supabase/schema.sql` in the Supabase SQL editor. Later changes go in `supabase/migrations/*.sql` (run by hand on an existing project) and are also folded into `schema.sql`.
 
