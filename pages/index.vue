@@ -2,6 +2,21 @@
 useHead({ title: "qrMe · cartes de visite à QR code" });
 
 const user = useSupabaseUser();
+const cta = computed(() => (user.value ? { to: "/dashboard", label: "Ouvrir l'app" } : { to: "/signup", label: "Créer ma carte" }));
+const year = new Date().getFullYear();
+
+const steps = [
+  { n: "1", title: "Crée ta carte", text: "Nom, métier, contacts, réseaux : tout est facultatif. Choisis une couleur et une mise en page, c'est prêt." },
+  { n: "2", title: "Montre-la", text: "SHOWme affiche ta carte en plein écran avec son QR code. On la scanne avec n'importe quel appareil photo, sans app." },
+  { n: "3", title: "Collectionne", text: "Scanne le QR des autres pour garder leur carte. Ajoute une note, des favoris, et retrouve-les en un clin d'œil." },
+];
+const perks = [
+  { title: "Toujours à jour", text: "Tu modifies ta carte, toutes les copies déjà collectées se mettent à jour." },
+  { title: "Plusieurs cartes", text: "Une pour le boulot, une pour les projets perso : tu choisis laquelle montrer." },
+  { title: "Rien à installer", text: "Pour la personne en face, un simple scan ouvre ta carte dans le navigateur." },
+  { title: "Fonctionne hors ligne", text: "Ta carte s'affiche même sans réseau, au fond d'une salle ou dans le métro." },
+];
+
 const samples = [
   { slug: "demo-1", first_name: "Jeanne", last_name: "Morel", job: "Directrice artistique", city: "Lyon", website: "morel.studio", tags: ["design", "print"], color: "jaune" as const, layout: "affiche" as const },
   { slug: "demo-2", first_name: "Malik", last_name: "Benali", job: "Développeur", city: "Marseille", email: "malik@benali.dev", website: "benali.dev", tags: ["dev", "web"], color: "bleu" as const, layout: "mono" as const },
@@ -19,12 +34,51 @@ const samples = [
       <div class="txt">
         <h1>Ta carte.<br >Un QR.<br >Une collection.</h1>
         <p>Crée ta carte de visite en une minute, montre-la en un geste, et garde celles des gens que tu rencontres.</p>
-        <NuxtLink :to="user ? '/dashboard' : '/signup'" class="q-pill solid big">{{ user ? "Ouvrir l'app" : "Créer ma carte" }}</NuxtLink>
+        <NuxtLink :to="cta.to" class="q-pill solid big">{{ cta.label }}</NuxtLink>
       </div>
       <div class="fan" aria-hidden="true">
         <div v-for="(s, i) in samples" :key="s.slug" class="f" :style="{ '--i': i }"><QrCard :card="s" /></div>
       </div>
     </section>
+
+    <section class="block">
+      <h2>Comment ça marche</h2>
+      <ol class="steps">
+        <li v-for="s in steps" :key="s.n">
+          <span class="n">{{ s.n }}</span>
+          <h3>{{ s.title }}</h3>
+          <p>{{ s.text }}</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="block">
+      <h2>Pourquoi qrMe</h2>
+      <ul class="perks">
+        <li v-for="p in perks" :key="p.title">
+          <h3>{{ p.title }}</h3>
+          <p>{{ p.text }}</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="block end">
+      <h2>Prêt à échanger ta carte ?</h2>
+      <p>Gratuit, en une minute.</p>
+      <NuxtLink :to="cta.to" class="q-pill solid big">{{ cta.label }}</NuxtLink>
+    </section>
+
+    <footer class="foot">
+      <NuxtLink to="/" class="logo small"><i /><i />qrMe</NuxtLink>
+      <nav>
+        <template v-if="user"><NuxtLink to="/dashboard">Ouvrir l'app</NuxtLink></template>
+        <template v-else>
+          <NuxtLink to="/signup">Créer un compte</NuxtLink>
+          <NuxtLink to="/login">Connexion</NuxtLink>
+        </template>
+      </nav>
+      <span class="q-note">© {{ year }} qrMe</span>
+    </footer>
   </div>
 </template>
 
@@ -40,8 +94,33 @@ h1 { margin: 0; font-family: var(--f-display); font-weight: var(--w-display); fo
 .txt p { margin: 0; max-width: 40ch; color: var(--mute); font-size: 17px; }
 .fan { position: relative; height: min(70vw, 520px); }
 .f { position: absolute; width: 46%; top: 6%; left: calc(8% + var(--i) * 22%); transform: rotate(calc(-8deg + var(--i) * 8deg)) translateY(calc(var(--i) * 4%)); box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.8); }
+
+.block { padding-top: 96px; }
+h2 { margin: 0 0 32px; font-family: var(--f-display); font-weight: var(--w-display); font-size: clamp(36px, 5vw, 56px); line-height: 1; letter-spacing: -0.02em; }
+h3 { margin: 0; font-family: var(--f-display); font-weight: var(--w-display); font-size: 22px; line-height: 1.1; }
+.block p { margin: 0; color: var(--mute); }
+.steps, .perks { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+.steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.steps li { display: grid; gap: 10px; align-content: start; padding: 24px; background: var(--ink-2); }
+.n { display: grid; place-items: center; width: 36px; height: 36px; margin-bottom: 8px; background: var(--c-jaune); color: var(--ink); font-family: var(--f-display); font-weight: var(--w-display); font-size: 18px; }
+.steps li:nth-child(2) .n { background: var(--c-bleu); color: var(--paper); }
+.steps li:nth-child(3) .n { background: var(--c-rouge); color: var(--paper); }
+.perks { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 40px; }
+.perks li { display: grid; gap: 6px; padding: 20px 0; border-top: 1.5px solid var(--line); }
+.end { display: grid; justify-items: center; gap: 16px; text-align: center; }
+.end h2 { margin: 0; }
+.foot { display: flex; align-items: center; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; margin-top: 96px; padding-top: 24px; border-top: 1.5px solid var(--line); }
+.foot nav { display: flex; gap: 20px; font-size: 14px; }
+.foot nav a { color: var(--mute); }
+.foot nav a:hover { color: var(--paper); }
+.logo.small { font-size: 18px; }
+.logo.small i { width: 14px; height: 14px; }
+.logo.small i + i { border-width: 3px; }
 @media (max-width: 860px) {
   .hero { grid-template-columns: minmax(0, 1fr); padding-top: 40px; }
   .fan { height: 110vw; max-height: 520px; }
+  .block { padding-top: 72px; }
+  .steps, .perks { grid-template-columns: minmax(0, 1fr); }
+  .foot { margin-top: 72px; }
 }
 </style>

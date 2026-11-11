@@ -11,13 +11,15 @@ const props = defineProps<{
 
 const root = ref<HTMLElement>();
 
-const c = computed(() => props.card);
+/* Les infos masquées par l'utilisateur (champ display) sont vidées avant le rendu. */
+const c = computed(() => visibleCard(props.card));
 const tags = computed(() => (c.value.tags || []).slice(0, MAX_TAGS));
 const initials = computed(
   () => ((c.value.first_name || "")[0] || "") + ((c.value.last_name || "")[0] || "") || "QR",
 );
 const nameLines = computed(() => [c.value.first_name, c.value.last_name].filter(Boolean) as string[]);
-const contact = computed(() => [c.value.phone, c.value.email, c.value.website].filter(Boolean) as string[]);
+const contact = computed(() => [c.value.phone, c.value.email, c.value.website, c.value.address].filter(Boolean) as string[]);
+const socials = computed(() => cardSocials(c.value));
 const qr = computed(() => qrSvg(cardUrl(c.value.slug || "apercu")));
 const label = computed(() => `Carte de ${fullName(c.value) || "sans nom"}`);
 
@@ -86,7 +88,10 @@ watch(() => [c.value.first_name, c.value.last_name, c.value.layout], () => nextT
           <div v-if="c.job" class="job">{{ c.job }}</div>
         </div>
         <div v-if="tags.length" class="tags"><span v-for="t in tags" :key="t">{{ t }}</span></div>
-        <div v-if="c.website" class="meta">{{ c.website }}</div>
+        <div v-if="contact.length" class="meta lines"><span v-for="l in contact" :key="l">{{ l }}</span></div>
+        <ul v-if="socials.length" class="soc">
+          <li v-for="s in socials" :key="s.key"><QrSocialIcon :name="s.key" aria-hidden="true" /><span>{{ s.handle }}</span><span class="sr">{{ s.label }}</span></li>
+        </ul>
         <div class="qr" v-html="qr" />
       </template>
 
@@ -99,9 +104,10 @@ watch(() => [c.value.first_name, c.value.last_name, c.value.layout], () => nextT
           </div>
           <div v-if="c.city" class="city">{{ c.city }}</div>
           <div v-if="tags.length" class="tags"><span v-for="t in tags" :key="t">{{ t }}</span></div>
-          <div class="meta">
-            <template v-for="(l, i) in contact" :key="l"><br v-if="i">{{ l }}</template>
-          </div>
+          <div v-if="contact.length" class="meta lines"><span v-for="l in contact" :key="l">{{ l }}</span></div>
+          <ul v-if="socials.length" class="soc">
+            <li v-for="s in socials" :key="s.key"><QrSocialIcon :name="s.key" aria-hidden="true" /><span>{{ s.handle }}</span><span class="sr">{{ s.label }}</span></li>
+          </ul>
           <div class="bottom"><div class="qr" v-html="qr" /></div>
         </div>
       </template>
@@ -112,6 +118,10 @@ watch(() => [c.value.first_name, c.value.last_name, c.value.layout], () => nextT
         <div class="rule" />
         <p v-if="c.description" class="desc">{{ c.description }}</p>
         <div v-if="tags.length" class="tags"><span v-for="t in tags" :key="t">{{ t }}</span></div>
+        <div v-if="contact.length" class="meta lines"><span v-for="l in contact" :key="l">{{ l }}</span></div>
+        <ul v-if="socials.length" class="soc">
+          <li v-for="s in socials" :key="s.key"><QrSocialIcon :name="s.key" aria-hidden="true" /><span>{{ s.handle }}</span><span class="sr">{{ s.label }}</span></li>
+        </ul>
         <div class="foot">
           <div class="info">
             <span v-if="c.job">{{ c.job }}</span>
@@ -188,7 +198,14 @@ watch(() => [c.value.first_name, c.value.last_name, c.value.layout], () => nextT
 }
 .disp .ln { display: block; white-space: nowrap; width: max-content; }
 .meta { font-size: 5.2cqw; line-height: 1.25; font-weight: 500; }
+.meta.lines span { display: block; overflow-wrap: anywhere; }
 .tags { display: flex; flex-wrap: wrap; gap: 1.6cqw; }
+/* Réseaux : pictogramme + pseudo. */
+.soc { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 1.2cqw 3.4cqw; font-size: 4.6cqw; line-height: 1.1; font-weight: 600; }
+.soc li { display: inline-flex; align-items: center; gap: 1.2cqw; min-width: 0; max-width: 100%; }
+.soc li > span:not(.sr) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.soc :deep(svg) { width: 5cqw; height: 5cqw; flex: none; stroke-width: 2.2; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .tags span {
   border: 0.55cqw solid currentColor;
   border-radius: 99px;
@@ -229,11 +246,14 @@ watch(() => [c.value.first_name, c.value.last_name, c.value.layout], () => nextT
 .l-typo .disp { font-size: 24cqw; line-height: 0.9; }
 .l-typo .rule { border-top: 0.7cqw solid currentColor; }
 .l-typo .desc { margin: 0; font-size: 5.2cqw; line-height: 1.15; font-weight: 500; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.l-typo .foot { margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; gap: 3cqw; }
+/* Le pied prend la hauteur restante ; le QR rétrécit si la carte affiche beaucoup d'infos. */
+.l-typo .ci > * { flex: none; }
+.l-typo .ci > .foot { flex: 1 1 0; min-height: 0; display: flex; justify-content: space-between; align-items: flex-end; gap: 3cqw; }
 .l-typo .info { flex: 1; min-width: 0; font-weight: 600; font-size: 5cqw; line-height: 1.02; overflow-wrap: break-word; hyphens: auto; }
 .l-typo .info span { display: block; }
 .l-typo .info span + span { margin-top: 2cqw; }
-.l-typo .foot .qr { width: 60cqw; flex: none; margin: 0 -1cqw -1cqw 0; }
+.l-typo .foot .qr { height: 100%; max-height: 60cqw; aspect-ratio: 1; flex: none; margin: 0 -1cqw -1cqw 0; }
+.l-typo .foot .qr :deep(svg) { width: 100%; height: 100%; }
 
 /* Dos */
 .back .ci { display: grid; place-items: center; padding: 8cqw; }

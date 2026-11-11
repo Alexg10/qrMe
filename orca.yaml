@@ -1,0 +1,5 @@
+scripts:
+  setup: |
+    main="$(cd "$(git rev-parse --git-common-dir)/.." && pwd)"
+    [ -f .env ] || cp "$main/.env" .env
+    pnpm install
