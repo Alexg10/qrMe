@@ -6,6 +6,11 @@
  * Identité qrMe : app sombre et éditoriale. Les cartes en aplats de couleur sont les seuls objets lumineux.
  * Les variables shadcn (--background, --primary…) sont alignées sur cette palette pour les composants ui/.
  */
+/* Finitions des cartes (components/qr/Card.vue) : angle de reflet au repos et teinte du néon. */
+@property --ax { syntax: "<number>"; inherits: true; initial-value: 0.5; }
+@property --ay { syntax: "<number>"; inherits: true; initial-value: 0.5; }
+@property --hue { syntax: "<number>"; inherits: true; initial-value: 0; }
+
 @layer base {
   :root {
     --ink: #0d0d0b;
@@ -22,6 +27,19 @@
     --c-rouge: #e2463a;
     --c-papier: #efece4;
     --c-noir: #1a1a17;
+    /* Couleurs débloquées par niveau (utils/card.ts). Dégradés et métaux sont des gradients : à utiliser en background. */
+    --c-corail: #ff7f5e;
+    --c-menthe: #8fdcb8;
+    --c-ciel: #84c4ee;
+    --c-rose: #f3a6c6;
+    --c-sapin: #1f4a39;
+    --c-nuit: #1d2350;
+    --c-aurore: linear-gradient(160deg, #bba5de 0%, #8fdcb8 55%, #84c4ee 100%);
+    --c-couchant: linear-gradient(165deg, #f3d23a 0%, #ff7f5e 55%, #f3a6c6 100%);
+    --c-lagon: linear-gradient(160deg, #8fdcb8 0%, #4ab3c9 50%, #6a7be0 100%);
+    --c-argent: linear-gradient(115deg, #9a9da3 0%, #eceef1 20%, #a7aab0 38%, #f7f8fa 52%, #9599a0 72%, #e2e4e8 100%);
+    --c-chrome: linear-gradient(115deg, #5f6873 0%, #f4f7fb 18%, #8c96a3 34%, #ffffff 48%, #6f7883 64%, #dde4ec 82%, #7d8794 100%);
+    --c-or: linear-gradient(115deg, #b8862b 0%, #f6dd8a 20%, #c9962f 38%, #fff1b8 52%, #a87420 72%, #efcf72 100%);
 
     /* Grotesque expressive pour les noms et titres, sans sobre pour le reste. Pas de capitales forcées. */
     --f-display: "Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;

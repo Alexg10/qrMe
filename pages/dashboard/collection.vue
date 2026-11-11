@@ -216,7 +216,7 @@ function exportAs(fmt: "csv" | "vcf") {
 .slot { position: relative; display: grid; gap: 8px; min-width: 0; align-content: start; }
 .tap { display: block; transition: transform 0.25s ease; }
 .tap:hover { transform: translateY(-6px) rotate(-1deg); }
-.tap > :deep(*) { box-shadow: 0 16px 30px -14px rgb(0 0 0 / 0.8); }
+.tap > :deep(*:not(.fx-neon)) { box-shadow: 0 16px 30px -14px rgb(0 0 0 / 0.8); }
 .fav { flex: none; width: 40px; height: 40px; display: grid; place-content: center; border: 0; background: transparent; cursor: pointer; color: var(--mute); border-radius: 99px; }
 .fav:hover { color: var(--paper); }
 .fav[aria-pressed="true"] { color: var(--c-jaune); }

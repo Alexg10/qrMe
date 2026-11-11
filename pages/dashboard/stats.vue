@@ -4,11 +4,18 @@ useHead({ title: "Stats · qrMe" });
 
 const { cards } = useMyCards();
 const { byCard, totals, received, days, load } = useCardStats();
+const progress = useProgress();
+const { level, best, xp, nextAt, ratio } = progress;
+const toNext = computed(() => (nextAt.value == null ? 0 : nextAt.value - best.value));
+const ladder = computed(() =>
+  LEVELS.map((at, i) => ({ n: i + 1, at, items: i === 0 ? "Les 7 couleurs classiques" : unlockSummary(i + 1) })),
+);
 const sel = ref<string | null>(null); // null = toutes les cartes
 const loading = ref(true);
 const errorMsg = ref("");
 
 onMounted(async () => {
+  progress.load(true).catch(() => {});
   try {
     await load();
   } catch (e) {
@@ -83,8 +90,33 @@ function spark(a: number[]) {
   <div>
     <div class="q-head">
       <h1 class="q-h1">Stats</h1>
-      <p>Combien de fois tes cartes ont été scannées, et combien de personnes les ont gardées.</p>
+      <p>Ton niveau, combien de fois tes cartes ont été scannées, et combien de personnes les ont gardées.</p>
     </div>
+
+    <section class="lvlbox" aria-labelledby="lvl-title">
+      <div class="lvl-head">
+        <h2 id="lvl-title" class="lvl-n">Niv. {{ level }}</h2>
+        <div class="lvl-txt">
+          <b>{{ best }} échange{{ best > 1 ? "s" : "" }}</b>
+          <span v-if="nextAt != null" class="q-note">encore {{ toNext }} pour le Niv. {{ level + 1 }} : {{ unlockSummary(level + 1) }}</span>
+          <span v-else class="q-note">Niveau maximum : tout est débloqué.</span>
+        </div>
+      </div>
+      <div class="lvl-bar" role="progressbar" :aria-valuenow="Math.round(ratio * 100)" aria-valuemin="0" aria-valuemax="100" aria-label="Progression vers le niveau suivant"><i :style="{ width: `${ratio * 100}%` }" /></div>
+      <p class="q-note">
+        1 échange = 1 carte dans ta collection, ou 1 personne qui a ajouté ta carte. Ton niveau ne redescend jamais<template v-if="xp < best"> (tu es à {{ xp }} aujourd'hui, ton meilleur score est gardé)</template>.
+      </p>
+      <details class="ladder">
+        <summary>Voir les 10 niveaux</summary>
+        <ol>
+          <li v-for="l in ladder" :key="l.n" :class="{ ok: level >= l.n, cur: level === l.n }">
+            <span class="ln">Niv. {{ l.n }}</span>
+            <span class="at">{{ l.at }}</span>
+            <span class="it">{{ l.items }}</span>
+          </li>
+        </ol>
+      </details>
+    </section>
 
     <div class="pick">
       <button type="button" class="q-pill" :class="{ on: !sel }" @click="sel = null">Toutes les cartes</button>
@@ -159,6 +191,21 @@ function spark(a: number[]) {
 </template>
 
 <style scoped>
+.lvlbox { display: grid; gap: 12px; padding: 18px; margin-bottom: 28px; border: 1px solid var(--line); background: var(--ink-2); }
+.lvl-head { display: flex; align-items: flex-end; gap: 18px; flex-wrap: wrap; }
+.lvl-n { margin: 0; font-family: var(--f-display); font-weight: var(--w-display); font-stretch: var(--s-display); font-size: 56px; line-height: 0.85; letter-spacing: -0.03em; color: var(--c-jaune); }
+.lvl-txt { display: grid; gap: 2px; min-width: 0; }
+.lvl-txt b { font-size: 17px; font-variant-numeric: tabular-nums; }
+.lvl-bar { height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.lvl-bar i { display: block; height: 100%; background: var(--c-jaune); border-radius: 99px; transition: width 0.6s ease; }
+.lvlbox > .q-note { margin: 0; }
+.ladder summary { cursor: pointer; font-weight: 600; font-size: 14px; }
+.ladder ol { list-style: none; margin: 10px 0 0; padding: 0; display: grid; }
+.ladder li { display: grid; grid-template-columns: 56px 40px minmax(0, 1fr); gap: 10px; padding: 7px 0; border-top: 1px solid var(--line); font-size: 14px; color: var(--faint); }
+.ladder li.ok { color: var(--paper); }
+.ladder li.cur .ln { color: var(--c-jaune); }
+.ladder .ln { font-weight: 700; }
+.ladder .at { text-align: right; font-variant-numeric: tabular-nums; }
 .pick { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
 .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); margin-bottom: 32px; }
 .kpi { background: var(--ink); padding: 16px; display: grid; gap: 6px; min-width: 0; }

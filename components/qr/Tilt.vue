@@ -78,6 +78,9 @@ function frame(t: number) {
     el.style.setProperty("--sp", `${(50 + cur.y * 6).toFixed(1)}%`);
     el.style.setProperty("--shx", `${(-cur.y * 3).toFixed(1)}px`);
     el.style.setProperty("--shy", `${(40 + cur.x * 3).toFixed(1)}px`);
+    // Angle des finitions de la carte (holo, paillettes, métal…), de 0 à 1.
+    el.style.setProperty("--tx", clamp(0.5 + cur.y / 14, 0, 1).toFixed(3));
+    el.style.setProperty("--ty", clamp(0.5 - cur.x / 14, 0, 1).toFixed(3));
   }
   raf = requestAnimationFrame(frame);
 }
@@ -115,6 +118,11 @@ onBeforeUnmount(() => {
 .stage { perspective: 1100px; width: 100%; touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: grab; }
 .tilt { position: relative; transform-style: preserve-3d; will-change: transform; }
 .tilt > :slotted(*) { box-shadow: var(--shx, 0px) var(--shy, 40px) 70px -18px rgb(0 0 0 / 0.85); }
+/* Finition Néon : on garde son halo en plus de l'ombre portée. */
+.tilt > :slotted(.fx-neon) {
+  box-shadow: 0 0 10px hsl(var(--hue) 100% 60% / 0.9), 0 0 34px hsl(var(--hue) 100% 55% / 0.55),
+    var(--shx, 0px) var(--shy, 40px) 70px -18px rgb(0 0 0 / 0.85);
+}
 .glare {
   position: absolute; inset: 0; pointer-events: none; mix-blend-mode: soft-light;
   background: radial-gradient(circle at var(--gx, 50%) var(--gy, 30%), rgb(255 255 255 / 0.75), rgb(255 255 255 / 0) 58%);

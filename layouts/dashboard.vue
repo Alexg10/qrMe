@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { QrCode, ScanLine, Layers, WalletCards, ChartColumn, Plus, LogOut } from "lucide-vue-next";
+import { QrCode, ScanLine, Layers, WalletCards, ChartColumn, Plus, LogOut, Sparkles } from "lucide-vue-next";
 
 const route = useRoute();
 const supabase = useSupabaseClient();
 const user = useSupabaseUser();
 const { entries, loaded: collLoaded, load: loadCollection } = useCollection();
 const { load: loadCards } = useMyCards();
+const { level } = useProgress();
 
 const NAV = [
   { to: "/dashboard", icon: QrCode, label: "SHOWme", sub: "Montrer ma carte", exact: true },
@@ -86,6 +87,7 @@ onMounted(() => {
         </button>
         <div v-if="menuOpen" class="menu">
           <span class="q-note">{{ user?.email }}</span>
+          <NuxtLink to="/dashboard/stats" class="q-pill"><Sparkles aria-hidden="true" />Niv. {{ level }} · voir ma progression</NuxtLink>
           <NuxtLink to="/dashboard/stats" class="q-pill mob-only"><ChartColumn aria-hidden="true" />Stats · scans et ajouts</NuxtLink>
           <button type="button" class="q-pill" @click="logout"><LogOut aria-hidden="true" />Se déconnecter</button>
         </div>
@@ -95,6 +97,7 @@ onMounted(() => {
     <main>
       <slot />
     </main>
+    <QrLevelUp />
   </div>
 </template>
 

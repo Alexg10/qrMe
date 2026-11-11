@@ -10,6 +10,7 @@ const idx = ref(0);
 const anim = ref<"" | "out-l" | "out-r" | "in">("");
 const present = ref<HTMLElement>();
 const fsError = ref(false);
+const intro = ref<{ play: () => void }>();
 
 onMounted(() => {
   try {
@@ -53,7 +54,10 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey));
 async function fullscreen() {
   try {
     if (document.fullscreenElement) await document.exitFullscreen();
-    else await present.value?.requestFullscreen();
+    else {
+      await present.value?.requestFullscreen();
+      intro.value?.play();
+    }
   } catch {
     fsError.value = true;
   }
@@ -82,9 +86,11 @@ async function fullscreen() {
       </div>
 
       <div class="holder" :class="anim">
-        <QrTilt @swipe="(d) => setCard(idx + d, d)">
-          <QrCard :card="current" />
-        </QrTilt>
+        <QrIntro ref="intro" :card="current">
+          <QrTilt @swipe="(d) => setCard(idx + d, d)">
+            <QrCard :card="current" />
+          </QrTilt>
+        </QrIntro>
       </div>
 
       <div v-if="cards.length > 1" class="dots" aria-hidden="true">

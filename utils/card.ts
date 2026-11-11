@@ -1,7 +1,12 @@
 import qrcode from "qrcode-generator";
 
-export type CardColor = "jaune" | "vert" | "bleu" | "lilas" | "rouge" | "papier" | "noir";
+export type CardColor =
+  | "jaune" | "vert" | "bleu" | "lilas" | "rouge" | "papier" | "noir"
+  | "corail" | "menthe" | "ciel" | "rose" | "sapin" | "nuit"
+  | "aurore" | "couchant" | "lagon" | "argent" | "chrome" | "or";
 export type CardLayout = "affiche" | "mono" | "typo";
+export type CardFinish = "none" | "shine" | "glitter" | "holo" | "neon";
+export type CardIntro = "none" | "deal" | "flip" | "reveal" | "burst";
 
 export interface Card {
   id: string;
@@ -24,6 +29,9 @@ export interface Card {
   address: string | null;
   color: CardColor;
   layout: CardLayout;
+  finish: CardFinish;
+  foil: boolean;
+  intro: CardIntro;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -39,14 +47,48 @@ export interface CollectionEntry {
   card: Card;
 }
 
-export const CARD_COLORS: { value: CardColor; label: string }[] = [
-  { value: "jaune", label: "Jaune" },
-  { value: "vert", label: "Vert" },
-  { value: "bleu", label: "Bleu" },
-  { value: "lilas", label: "Lilas" },
-  { value: "rouge", label: "Rouge" },
-  { value: "papier", label: "Papier" },
-  { value: "noir", label: "Noir" },
+/**
+ * Couleurs de carte. `level` = niveau qui la débloque (voir utils/levels.ts), `dark` = texte clair.
+ * Les teintes sont dans assets/css/main.css (--c-<valeur>) ; dégradés et métaux y sont des gradients.
+ */
+export const CARD_COLORS: { value: CardColor; label: string; level: number; group: string; dark?: boolean; metal?: boolean }[] = [
+  { value: "jaune", label: "Jaune", level: 1, group: "Classiques" },
+  { value: "vert", label: "Vert", level: 1, group: "Classiques" },
+  { value: "bleu", label: "Bleu", level: 1, group: "Classiques" },
+  { value: "lilas", label: "Lilas", level: 1, group: "Classiques" },
+  { value: "rouge", label: "Rouge", level: 1, group: "Classiques" },
+  { value: "papier", label: "Papier", level: 1, group: "Classiques" },
+  { value: "noir", label: "Noir", level: 1, group: "Classiques", dark: true },
+  { value: "corail", label: "Corail", level: 2, group: "Unies" },
+  { value: "menthe", label: "Menthe", level: 2, group: "Unies" },
+  { value: "ciel", label: "Ciel", level: 2, group: "Unies" },
+  { value: "rose", label: "Rose", level: 2, group: "Unies" },
+  { value: "sapin", label: "Sapin", level: 4, group: "Unies", dark: true },
+  { value: "nuit", label: "Nuit", level: 4, group: "Unies", dark: true },
+  { value: "aurore", label: "Aurore", level: 6, group: "Dégradés" },
+  { value: "couchant", label: "Couchant", level: 6, group: "Dégradés" },
+  { value: "lagon", label: "Lagon", level: 6, group: "Dégradés" },
+  { value: "argent", label: "Argent", level: 9, group: "Métal", metal: true },
+  { value: "chrome", label: "Chrome", level: 9, group: "Métal", metal: true },
+  { value: "or", label: "Or", level: 10, group: "Métal", metal: true },
+];
+export const colorInfo = (c?: string | null) => CARD_COLORS.find((x) => x.value === c) ?? CARD_COLORS[0];
+
+export const CARD_FINISHES: { value: CardFinish; label: string; level: number }[] = [
+  { value: "none", label: "Aucune", level: 1 },
+  { value: "shine", label: "Brillance", level: 3 },
+  { value: "glitter", label: "Paillettes", level: 5 },
+  { value: "holo", label: "Holographique", level: 7 },
+  { value: "neon", label: "Néon", level: 10 },
+];
+export const FOIL_LEVEL = 8;
+
+export const CARD_INTROS: { value: CardIntro; label: string; level: number }[] = [
+  { value: "none", label: "Aucune", level: 1 },
+  { value: "deal", label: "Donne", level: 4 },
+  { value: "flip", label: "Flip", level: 6 },
+  { value: "reveal", label: "Révélation", level: 8 },
+  { value: "burst", label: "Éclat", level: 10 },
 ];
 
 export const CARD_LAYOUTS: { value: CardLayout; label: string }[] = [
@@ -103,7 +145,7 @@ export function cardSocials(c: Partial<Card>) {
 export const EDITABLE_FIELDS = [
   "label", "first_name", "last_name", "job", "description", "tags",
   "city", "phone", "email", "website", "address",
-  "linkedin", "instagram", "youtube", "twitch", "color", "layout",
+  "linkedin", "instagram", "youtube", "twitch", "color", "layout", "finish", "foil", "intro",
 ] as const;
 
 export type CardDraft = Pick<Card, (typeof EDITABLE_FIELDS)[number]>;
@@ -113,6 +155,7 @@ export function emptyDraft(): CardDraft {
     label: "Ma carte", first_name: "", last_name: "", job: "", description: "", tags: [],
     city: "", phone: "", email: "", website: "", address: "",
     linkedin: "", instagram: "", youtube: "", twitch: "", color: "jaune", layout: "affiche",
+    finish: "none", foil: false, intro: "none",
   };
 }
 
