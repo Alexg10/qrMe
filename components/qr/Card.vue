@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { Instagram, Linkedin, Twitch, Youtube } from "lucide-vue-next";
-
 /**
  * Rendu d'une carte qrMe (format 55 × 85). Tout le contenu est dimensionné en cqw,
  * donc la carte garde les mêmes proportions de 40 px (vignette) à plein écran.
@@ -19,8 +17,7 @@ const initials = computed(
 );
 const nameLines = computed(() => [c.value.first_name, c.value.last_name].filter(Boolean) as string[]);
 const contact = computed(() => [c.value.phone, c.value.email, c.value.website, c.value.address].filter(Boolean) as string[]);
-const ICONS = { linkedin: Linkedin, instagram: Instagram, youtube: Youtube, twitch: Twitch };
-const socials = computed(() => cardSocials(c.value).map((s) => ({ ...s, icon: ICONS[s.key] })));
+const socials = computed(() => cardSocials(c.value));
 const qr = computed(() => qrSvg(cardUrl(c.value.slug || "apercu")));
 const label = computed(() => `Carte de ${fullName(c.value) || "sans nom"}`);
 
@@ -65,7 +62,7 @@ watch(() => [c.value.first_name, c.value.last_name, c.value.layout], () => nextT
         <div v-if="tags.length" class="tags"><span v-for="t in tags" :key="t">{{ t }}</span></div>
         <div v-if="contact.length" class="meta lines"><span v-for="l in contact" :key="l">{{ l }}</span></div>
         <ul v-if="socials.length" class="soc">
-          <li v-for="s in socials" :key="s.key"><component :is="s.icon" aria-hidden="true" /><span>{{ s.handle }}</span><span class="sr">{{ s.label }}</span></li>
+          <li v-for="s in socials" :key="s.key"><QrSocialIcon :name="s.key" aria-hidden="true" /><span>{{ s.handle }}</span><span class="sr">{{ s.label }}</span></li>
         </ul>
         <div class="qr" v-html="qr" />
       </template>
@@ -81,7 +78,7 @@ watch(() => [c.value.first_name, c.value.last_name, c.value.layout], () => nextT
           <div v-if="tags.length" class="tags"><span v-for="t in tags" :key="t">{{ t }}</span></div>
           <div v-if="contact.length" class="meta lines"><span v-for="l in contact" :key="l">{{ l }}</span></div>
           <ul v-if="socials.length" class="soc">
-            <li v-for="s in socials" :key="s.key"><component :is="s.icon" aria-hidden="true" /><span>{{ s.handle }}</span><span class="sr">{{ s.label }}</span></li>
+            <li v-for="s in socials" :key="s.key"><QrSocialIcon :name="s.key" aria-hidden="true" /><span>{{ s.handle }}</span><span class="sr">{{ s.label }}</span></li>
           </ul>
           <div class="bottom"><div class="qr" v-html="qr" /></div>
         </div>
@@ -95,7 +92,7 @@ watch(() => [c.value.first_name, c.value.last_name, c.value.layout], () => nextT
         <div v-if="tags.length" class="tags"><span v-for="t in tags" :key="t">{{ t }}</span></div>
         <div v-if="contact.length" class="meta lines"><span v-for="l in contact" :key="l">{{ l }}</span></div>
         <ul v-if="socials.length" class="soc">
-          <li v-for="s in socials" :key="s.key"><component :is="s.icon" aria-hidden="true" /><span>{{ s.handle }}</span><span class="sr">{{ s.label }}</span></li>
+          <li v-for="s in socials" :key="s.key"><QrSocialIcon :name="s.key" aria-hidden="true" /><span>{{ s.handle }}</span><span class="sr">{{ s.label }}</span></li>
         </ul>
         <div class="foot">
           <div class="info">
