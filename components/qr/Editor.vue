@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Eye, EyeOff, Lock } from "lucide-vue-next";
+import { Eye, EyeOff, Loader2, Lock, Plus, Save } from "lucide-vue-next";
 import { useToast } from "@/components/ui/toast/use-toast";
 
 const props = defineProps<{ card?: Card }>();
@@ -307,7 +307,10 @@ async function copyLink() {
 
       <p v-if="errorMsg" class="q-error full" role="alert">{{ errorMsg }}</p>
       <div class="acts full">
-        <button type="submit" class="q-pill solid big" :disabled="saving">
+        <button type="submit" class="q-pill save" :disabled="saving">
+          <Loader2 v-if="saving" class="spin" aria-hidden="true" />
+          <Save v-else-if="card" aria-hidden="true" />
+          <Plus v-else aria-hidden="true" />
           {{ saving ? "Enregistrement…" : card ? "Enregistrer" : "Créer la carte" }}
         </button>
         <template v-if="card">
@@ -376,7 +379,18 @@ async function copyLink() {
 .toggle input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: var(--paper); transition: transform 0.15s ease; }
 .toggle input:checked { background: var(--c-jaune); }
 .toggle input:checked::after { transform: translateX(16px); background: var(--ink); }
-.acts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.acts { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+.q-pill.save {
+  padding: 14px 28px; gap: 10px; font-size: 17px; font-weight: 700;
+  background: var(--c-jaune); border-color: var(--c-jaune); color: var(--ink);
+  box-shadow: 0 10px 24px -10px rgb(0 0 0 / 0.8);
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+.q-pill.save:hover:not(:disabled) { background: var(--c-jaune); filter: brightness(1.08); transform: translateY(-1px); }
+.q-pill.save:active:not(:disabled) { transform: translateY(0); }
+.q-pill.save svg { width: 20px; height: 20px; }
+.spin { animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 .danger:hover { border-color: var(--c-rouge); color: var(--c-rouge); }
 .preview-col { position: sticky; top: 24px; display: grid; gap: 12px; }
 .pv :deep(.qcard:not(.fx-neon)) { box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.8); }
