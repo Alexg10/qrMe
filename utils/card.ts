@@ -22,6 +22,7 @@ export interface Card {
   youtube: string | null;
   twitch: string | null;
   address: string | null;
+  display: CardDisplay;
   color: CardColor;
   layout: CardLayout;
   is_active: boolean;
@@ -57,7 +58,7 @@ export const CARD_LAYOUTS: { value: CardLayout; label: string }[] = [
 
 export const MAX_TAGS = 5;
 
-/** Réseaux sociaux : on accepte un pseudo (@nom) ou un lien complet. Pas affichés sur la carte, seulement une fois partagée. */
+/** Réseaux sociaux : on accepte un pseudo (@nom) ou un lien complet. Masqués sur la carte par défaut (voir isShown), toujours sur la page publique. */
 export const SOCIALS = [
   { key: "linkedin", label: "LinkedIn", base: "https://www.linkedin.com/in/", placeholder: "prenom-nom ou lien" },
   { key: "instagram", label: "Instagram", base: "https://www.instagram.com/", placeholder: "@pseudo" },
@@ -100,10 +101,35 @@ export function cardSocials(c: Partial<Card>) {
   }));
 }
 
+/* ---------- visibilité sur la carte ---------- */
+
+/** Infos qu'on peut afficher ou masquer sur la face de la carte. La page publique et les exports gardent tout. */
+export const DISPLAY_KEYS = [
+  "first_name", "last_name", "city", "job", "phone", "email", "website", "address",
+  "linkedin", "instagram", "youtube", "twitch",
+] as const;
+export type DisplayKey = (typeof DISPLAY_KEYS)[number];
+/** Seuls les choix différents du défaut sont stockés : { linkedin: true, phone: false }. */
+export type CardDisplay = Partial<Record<DisplayKey, boolean>>;
+
+const isSocial = (k: DisplayKey) => SOCIALS.some((s) => s.key === k);
+
+/** Par défaut, les infos de profil sont visibles et les réseaux masqués. */
+export function isShown(c: Partial<Card>, k: DisplayKey) {
+  return c.display?.[k] ?? !isSocial(k);
+}
+
+/** Copie de la carte où les infos masquées sont vidées : c'est ce que dessine la carte. */
+export function visibleCard<T extends Partial<Card>>(c: T): T {
+  const out = { ...c } as Record<string, unknown>;
+  for (const k of DISPLAY_KEYS) if (!isShown(c, k)) out[k] = null;
+  return out as T;
+}
+
 export const EDITABLE_FIELDS = [
   "label", "first_name", "last_name", "job", "description", "tags",
   "city", "phone", "email", "website", "address",
-  "linkedin", "instagram", "youtube", "twitch", "color", "layout",
+  "linkedin", "instagram", "youtube", "twitch", "display", "color", "layout",
 ] as const;
 
 export type CardDraft = Pick<Card, (typeof EDITABLE_FIELDS)[number]>;
@@ -112,7 +138,7 @@ export function emptyDraft(): CardDraft {
   return {
     label: "Ma carte", first_name: "", last_name: "", job: "", description: "", tags: [],
     city: "", phone: "", email: "", website: "", address: "",
-    linkedin: "", instagram: "", youtube: "", twitch: "", color: "jaune", layout: "affiche",
+    linkedin: "", instagram: "", youtube: "", twitch: "", display: {}, color: "jaune", layout: "affiche",
   };
 }
 

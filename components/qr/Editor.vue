@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Eye, EyeOff } from "lucide-vue-next";
 import { useToast } from "@/components/ui/toast/use-toast";
 
 const props = defineProps<{ card?: Card }>();
@@ -19,6 +20,7 @@ function fill(c?: Card) {
   const src = (c ?? {}) as Record<string, unknown>;
   const def = base as Record<string, unknown>;
   for (const k of EDITABLE_FIELDS) d[k] = src[k] ?? def[k];
+  draft.display = { ...(c?.display || {}) }; // copie : ne pas modifier la carte en cache avant l'enregistrement
   tagsInput.value = (draft.tags || []).join(", ");
   isActive.value = c ? c.is_active : true;
 }
@@ -29,7 +31,16 @@ watch(tagsInput, (v) => (draft.tags = parseTags(v)));
 const tagCount = computed(() => parseTags(tagsInput.value).length);
 const preview = computed(() => ({ ...draft, slug: props.card?.slug }));
 
-const FIELDS: { key: keyof CardDraft; label: string; full?: boolean; type?: string; placeholder?: string; auto?: string }[] = [
+/* Œil à côté de chaque info : visible ou non sur la carte. On ne garde que les écarts au défaut. */
+const shown = (k: DisplayKey) => isShown(draft, k);
+function toggleShown(k: DisplayKey) {
+  const next = !shown(k);
+  const d = { ...draft.display, [k]: next };
+  if (next === isShown({}, k)) delete d[k];
+  draft.display = d;
+}
+
+const FIELDS: { key: DisplayKey; label: string; full?: boolean; type?: string; placeholder?: string; auto?: string }[] = [
   { key: "first_name", label: "Prénom", auto: "given-name" },
   { key: "last_name", label: "Nom", auto: "family-name" },
   { key: "job", label: "Titre", full: true, auto: "organization-title" },
@@ -116,8 +127,20 @@ async function copyLink() {
         <label for="f-label">Nom de la carte <span class="opt">· visible par toi seul, ex. Pro, Perso</span></label>
         <input id="f-label" v-model="draft.label" maxlength="30" >
       </div>
-      <div v-for="f in FIELDS" :key="f.key" class="q-field" :class="{ full: f.full }">
-        <label :for="`f-${f.key}`">{{ f.label }}</label>
+      <div v-for="f in FIELDS" :key="f.key" class="q-field" :class="{ full: f.full, off: !shown(f.key) }">
+        <div class="lbl-row">
+          <label :for="`f-${f.key}`">{{ f.label }}</label>
+          <button
+            type="button"
+            class="vis"
+            :aria-pressed="shown(f.key)"
+            :aria-label="`${f.label} : ${shown(f.key) ? 'visible' : 'masqué'} sur la carte`"
+            :title="shown(f.key) ? 'Visible sur la carte' : 'Masqué sur la carte'"
+            @click="toggleShown(f.key)"
+          >
+            <component :is="shown(f.key) ? Eye : EyeOff" aria-hidden="true" />
+          </button>
+        </div>
         <input
           :id="`f-${f.key}`"
           v-model="(draft as any)[f.key]"
@@ -127,10 +150,22 @@ async function copyLink() {
         >
       </div>
       <div class="socials full">
-        <span class="q-lbl">Réseaux <span class="opt">· pas affichés sur la carte, visibles une fois scannée</span></span>
+        <span class="q-lbl">Réseaux <span class="opt">· masqués sur la carte sauf si tu les affiches, toujours visibles une fois scannée</span></span>
         <div class="soc-grid">
-          <div v-for="s in SOCIALS" :key="s.key" class="q-field">
-            <label :for="`f-${s.key}`">{{ s.label }}</label>
+          <div v-for="s in SOCIALS" :key="s.key" class="q-field" :class="{ off: !shown(s.key) }">
+            <div class="lbl-row">
+              <label :for="`f-${s.key}`">{{ s.label }}</label>
+              <button
+                type="button"
+                class="vis"
+                :aria-pressed="shown(s.key)"
+                :aria-label="`${s.label} : ${shown(s.key) ? 'visible' : 'masqué'} sur la carte`"
+                :title="shown(s.key) ? 'Visible sur la carte' : 'Masqué sur la carte'"
+                @click="toggleShown(s.key)"
+              >
+                <component :is="shown(s.key) ? Eye : EyeOff" aria-hidden="true" />
+              </button>
+            </div>
             <input
               :id="`f-${s.key}`"
               v-model="draft[s.key]"
@@ -225,6 +260,13 @@ async function copyLink() {
 .full { grid-column: 1 / -1; }
 .socials { display: grid; gap: 10px; }
 .socials .opt { text-transform: none; letter-spacing: 0; color: var(--faint); }
+.lbl-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.vis { display: grid; place-items: center; width: 26px; height: 26px; margin: -4px -4px -4px 0; padding: 0; border: 0; background: none; color: var(--paper); cursor: pointer; border-radius: 4px; }
+.vis svg { width: 16px; height: 16px; }
+.vis[aria-pressed="false"] { color: var(--faint); }
+.vis:hover { background: var(--line); }
+.vis:focus-visible { outline: 2px solid var(--paper); outline-offset: 1px; }
+.off input { color: var(--mute); }
 .soc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 16px; }
 .choices { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; padding-top: 12px; border-top: 1px solid var(--line); margin-top: 6px; }
 .swatches, .layouts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }

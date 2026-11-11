@@ -25,6 +25,7 @@ create table public.cards (
   instagram   text,
   youtube     text,
   twitch      text,
+  display     jsonb not null default '{}'::jsonb,          -- infos affichées sur la carte : écarts au défaut (profil visible, réseaux masqués)
   color       text not null default 'jaune'
               check (color in ('jaune', 'vert', 'bleu', 'lilas', 'rouge', 'papier', 'noir')),
   layout      text not null default 'affiche'
