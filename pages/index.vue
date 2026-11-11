@@ -17,6 +17,20 @@ const perks = [
   { title: "Fonctionne hors ligne", text: "Ta carte s'affiche même sans réseau, au fond d'une salle ou dans le métro." },
 ];
 
+/* Aperçus des styles qui se gagnent en échangeant. Le seuil affiché vient des vrais niveaux de déblocage. */
+const levelOf = (c: { color: string; finish: string; foil?: boolean }) =>
+  Math.max(
+    colorInfo(c.color).level,
+    CARD_FINISHES.find((f) => f.value === c.finish)?.level ?? 1,
+    c.foil ? FOIL_LEVEL : 1,
+  );
+const styles = [
+  { title: "Brillance", text: "Un reflet qui suit le mouvement.", card: { slug: "demo-4", first_name: "Léa", last_name: "Roux", job: "Illustratrice", color: "corail" as const, layout: "affiche" as const, finish: "shine" as const } },
+  { title: "Paillettes", text: "Des éclats qui scintillent.", card: { slug: "demo-5", first_name: "Hugo", last_name: "Lenoir", job: "DJ", color: "nuit" as const, layout: "typo" as const, finish: "glitter" as const } },
+  { title: "Holographique", text: "Un dégradé irisé, façon carte rare.", card: { slug: "demo-6", first_name: "Sofia", last_name: "Diaz", job: "Product designer", color: "lagon" as const, layout: "mono" as const, finish: "holo" as const } },
+  { title: "Or et néon", text: "Le métal, le néon, le nom en relief.", card: { slug: "demo-7", first_name: "Max", last_name: "Auber", job: "Fondateur", color: "or" as const, layout: "affiche" as const, finish: "neon" as const, foil: true } },
+].map((s) => ({ ...s, n: xpFor(levelOf(s.card)) }));
+
 const samples = [
   { slug: "demo-1", first_name: "Jeanne", last_name: "Morel", job: "Directrice artistique", city: "Lyon", website: "morel.studio", tags: ["design", "print"], color: "jaune" as const, layout: "affiche" as const },
   { slug: "demo-2", first_name: "Malik", last_name: "Benali", job: "Développeur", city: "Marseille", email: "malik@benali.dev", website: "benali.dev", tags: ["dev", "web"], color: "bleu" as const, layout: "mono" as const },
@@ -50,6 +64,21 @@ const samples = [
           <p>{{ s.text }}</p>
         </li>
       </ol>
+    </section>
+
+    <section class="block styles">
+      <div class="lead">
+        <h2>Plus tu échanges,<br >plus ta carte brille.</h2>
+        <p>Chaque carte que tu scannes, chaque personne qui garde la tienne : c'est un échange. Au fil des rencontres, tu débloques de nouvelles couleurs, des finitions et des animations pour ta carte.</p>
+      </div>
+      <ul class="looks">
+        <li v-for="s in styles" :key="s.title">
+          <div class="pv" aria-hidden="true"><QrCard :card="s.card" /></div>
+          <span class="cnt">{{ s.n }} échanges</span>
+          <h3>{{ s.title }}</h3>
+          <p>{{ s.text }}</p>
+        </li>
+      </ul>
     </section>
 
     <section class="block">
@@ -107,6 +136,16 @@ h3 { margin: 0; font-family: var(--f-display); font-weight: var(--w-display); fo
 .steps li:nth-child(3) .n { background: var(--c-rouge); color: var(--paper); }
 .perks { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 40px; }
 .perks li { display: grid; gap: 6px; padding: 20px 0; border-top: 1.5px solid var(--line); }
+.lead { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px 40px; align-items: end; margin-bottom: 40px; }
+.lead h2 { margin: 0; }
+.lead p { max-width: 46ch; font-size: 17px; }
+.looks { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+.looks li { display: grid; gap: 8px; align-content: start; justify-items: start; }
+.pv { width: 100%; margin-bottom: 8px; box-shadow: 0 24px 48px -20px rgb(0 0 0 / 0.8); transition: transform 0.3s ease; }
+.looks li:nth-child(odd) .pv { transform: rotate(-2deg); }
+.looks li:nth-child(even) .pv { transform: rotate(2deg) translateY(12px); }
+.looks li:hover .pv { transform: rotate(0) translateY(-6px); }
+.cnt { padding: 3px 10px; background: var(--ink-2); border: 1.5px solid var(--line); border-radius: 999px; font-size: 13px; color: var(--mute); }
 .end { display: grid; justify-items: center; gap: 16px; text-align: center; }
 .end h2 { margin: 0; }
 .foot { display: flex; align-items: center; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; margin-top: 96px; padding-top: 24px; border-top: 1.5px solid var(--line); }
@@ -121,6 +160,8 @@ h3 { margin: 0; font-family: var(--f-display); font-weight: var(--w-display); fo
   .fan { height: 110vw; max-height: 520px; }
   .block { padding-top: 72px; }
   .steps, .perks { grid-template-columns: minmax(0, 1fr); }
+  .lead { grid-template-columns: minmax(0, 1fr); }
+  .looks { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 16px; }
   .foot { margin-top: 72px; }
 }
 </style>
