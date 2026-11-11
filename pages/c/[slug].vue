@@ -84,7 +84,7 @@ const rows = computed(() => {
 <template>
   <div class="pub">
     <div v-if="card" class="wrap">
-      <div class="card"><QrCard :card="card" /></div>
+      <div class="card"><QrIntro :card="card"><QrCard :card="card" /></QrIntro></div>
 
       <div class="info">
         <p v-if="card.description" class="desc">{{ card.description }}</p>
@@ -132,7 +132,7 @@ const rows = computed(() => {
 <style scoped>
 .pub { min-height: 100vh; background: var(--paper); color: var(--ink); padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 40px max(16px, env(safe-area-inset-left, 0px)); }
 .wrap { max-width: 860px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: 36px; align-items: start; padding-top: 24px; }
-.card > :deep(*) { box-shadow: 0 30px 60px -24px rgb(0 0 0 / 0.45); }
+.card :deep(.qcard:not(.fx-neon)) { box-shadow: 0 30px 60px -24px rgb(0 0 0 / 0.45); }
 .info { display: grid; gap: 18px; min-width: 0; }
 .desc { margin: 0; font-size: 17px; max-width: 42ch; }
 dl { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); border-top: 1.5px solid var(--ink); }

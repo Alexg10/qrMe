@@ -1,10 +1,17 @@
 <script setup lang="ts">
-import { Eye, EyeOff } from "lucide-vue-next";
+import { Eye, EyeOff, Lock } from "lucide-vue-next";
 import { useToast } from "@/components/ui/toast/use-toast";
 
 const props = defineProps<{ card?: Card }>();
 
 const { save, remove, setActive } = useMyCards();
+const progress = useProgress();
+onMounted(() => progress.load(true).then(applyTrial).catch(() => {}));
+const lockTitle = (label: string, level: number) =>
+  progress.isUnlocked(level) ? label : `${label} · se débloque au Niv. ${level}`;
+const colorGroups = computed(() =>
+  [...new Set(CARD_COLORS.map((c) => c.group))].map((g) => ({ name: g, colors: CARD_COLORS.filter((c) => c.group === g) })),
+);
 const { toast } = useToast();
 
 const draft = reactive<CardDraft>(emptyDraft());
@@ -25,7 +32,22 @@ function fill(c?: Card) {
   isActive.value = c ? c.is_active : true;
 }
 fill(props.card);
-watch(() => props.card?.id, () => fill(props.card));
+watch(() => props.card?.id, () => {
+  fill(props.card);
+  applyTrial();
+});
+
+/* « Essayer sur ma carte » depuis la fenêtre de niveau : ?essai=finish:holo pré-sélectionne la nouveauté. */
+const route = useRoute();
+function applyTrial() {
+  const [kind, value] = String(route.query.essai || "").split(":");
+  const u = UNLOCKS.find((x) => x.kind === kind && x.value === value);
+  if (!u || !progress.isUnlocked(u.level)) return;
+  if (u.kind === "color") draft.color = u.value as CardColor;
+  if (u.kind === "finish") draft.finish = u.value as CardFinish;
+  if (u.kind === "foil") draft.foil = true;
+  if (u.kind === "intro") draft.intro = u.value as CardIntro;
+}
 watch(tagsInput, (v) => (draft.tags = parseTags(v)));
 
 const tagCount = computed(() => parseTags(tagsInput.value).length);
@@ -109,6 +131,9 @@ function scrollToPreview() {
   previewEl.value?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+const intro = ref<{ play: () => void }>();
+const replay = () => nextTick(() => intro.value?.play());
+
 const link = computed(() => (props.card ? cardUrl(props.card.slug) : ""));
 async function copyLink() {
   try {
@@ -190,24 +215,41 @@ async function copyLink() {
       </div>
 
       <div class="choices">
+        <NuxtLink to="/dashboard/stats" class="lvl">
+          <b>Niv. {{ progress.level.value }}</b>
+          <span class="bar"><i :style="{ width: `${progress.ratio.value * 100}%` }" /></span>
+          <span class="q-note">
+            {{ progress.nextAt.value == null ? "Tout est débloqué" : `encore ${progress.nextAt.value - progress.best.value} échange${progress.nextAt.value - progress.best.value > 1 ? "s" : ""} pour le Niv. ${progress.level.value + 1}` }}
+          </span>
+        </NuxtLink>
+
         <div>
-          <span class="q-lbl">Couleur</span>
-          <div class="swatches">
-            <button
-              v-for="col in CARD_COLORS"
-              :key="col.value"
-              type="button"
-              class="sw"
-              :style="{ background: `var(--c-${col.value})` }"
-              :aria-label="col.label"
-              :aria-pressed="draft.color === col.value"
-              @click="draft.color = col.value"
-            />
+          <span class="q-lbl">Couleur · {{ colorInfo(draft.color).label }}</span>
+          <div v-for="g in colorGroups" :key="g.name" class="sw-group">
+            <span class="grp">{{ g.name }}</span>
+            <div class="swatches">
+              <button
+                v-for="col in g.colors"
+                :key="col.value"
+                type="button"
+                class="sw"
+                :class="{ metal: col.metal }"
+                :style="{ background: `var(--c-${col.value})` }"
+                :aria-label="lockTitle(col.label, col.level)"
+                :title="lockTitle(col.label, col.level)"
+                :aria-pressed="draft.color === col.value"
+                :disabled="!progress.isUnlocked(col.level)"
+                @click="draft.color = col.value"
+              >
+                <Lock v-if="!progress.isUnlocked(col.level)" class="lock" aria-hidden="true" />
+              </button>
+            </div>
           </div>
         </div>
+
         <div>
           <span class="q-lbl">Mise en page</span>
-          <div class="layouts">
+          <div class="pills">
             <button
               v-for="l in CARD_LAYOUTS"
               :key="l.value"
@@ -217,6 +259,47 @@ async function copyLink() {
               @click="draft.layout = l.value"
             >
               {{ l.label }}
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <span class="q-lbl">Finition</span>
+          <div class="pills">
+            <button
+              v-for="f in CARD_FINISHES"
+              :key="f.value"
+              type="button"
+              class="q-pill"
+              :class="{ on: draft.finish === f.value, locked: !progress.isUnlocked(f.level) }"
+              :title="lockTitle(f.label, f.level)"
+              :disabled="!progress.isUnlocked(f.level)"
+              @click="draft.finish = f.value"
+            >
+              <Lock v-if="!progress.isUnlocked(f.level)" aria-hidden="true" />{{ f.label }}<span v-if="!progress.isUnlocked(f.level)" class="need">Niv. {{ f.level }}</span>
+            </button>
+          </div>
+          <label class="toggle" :class="{ locked: !progress.isUnlocked(FOIL_LEVEL) }">
+            <input v-model="draft.foil" type="checkbox" :disabled="!progress.isUnlocked(FOIL_LEVEL) && !draft.foil">
+            Foil sur le nom
+            <span v-if="!progress.isUnlocked(FOIL_LEVEL)" class="need"><Lock aria-hidden="true" />Niv. {{ FOIL_LEVEL }}</span>
+          </label>
+        </div>
+
+        <div>
+          <span class="q-lbl">Animation SHOWme · quand tu montres ta carte</span>
+          <div class="pills">
+            <button
+              v-for="a in CARD_INTROS"
+              :key="a.value"
+              type="button"
+              class="q-pill"
+              :class="{ on: draft.intro === a.value, locked: !progress.isUnlocked(a.level) }"
+              :title="lockTitle(a.label, a.level)"
+              :disabled="!progress.isUnlocked(a.level)"
+              @click="draft.intro = a.value; replay()"
+            >
+              <Lock v-if="!progress.isUnlocked(a.level)" aria-hidden="true" />{{ a.label }}<span v-if="!progress.isUnlocked(a.level)" class="need">Niv. {{ a.level }}</span>
             </button>
           </div>
         </div>
@@ -235,12 +318,13 @@ async function copyLink() {
     </form>
 
     <div ref="previewEl" class="preview-col">
-      <QrCard :card="preview" />
+      <QrIntro ref="intro" :card="preview" class="pv"><QrCard :card="preview" /></QrIntro>
       <div class="meta">
         <template v-if="card">
           <span class="q-note link">{{ link }}</span>
           <button type="button" class="q-pill" @click="copyLink">Copier le lien</button>
         </template>
+        <button v-if="draft.intro !== 'none'" type="button" class="q-pill" @click="replay">Rejouer l'animation</button>
         <span v-else class="q-note">Aperçu en direct · le QR définitif est créé à l'enregistrement</span>
       </div>
       <p v-if="card && !isActive" class="q-error">Carte désactivée : son QR ne mène plus nulle part.</p>
@@ -268,14 +352,34 @@ async function copyLink() {
 .vis:focus-visible { outline: 2px solid var(--paper); outline-offset: 1px; }
 .off input { color: var(--mute); }
 .soc-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 16px; }
-.choices { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; padding-top: 12px; border-top: 1px solid var(--line); margin-top: 6px; }
-.swatches, .layouts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
-.sw { width: 34px; height: 34px; border: 0; padding: 0; cursor: pointer; position: relative; box-shadow: inset 0 0 0 1px var(--line); }
+.choices { grid-column: 1 / -1; display: grid; gap: 20px; padding-top: 14px; border-top: 1px solid var(--line); margin-top: 6px; }
+.lvl { display: grid; grid-template-columns: auto minmax(60px, 160px) minmax(0, 1fr); align-items: center; gap: 12px; justify-self: start; }
+.lvl b { font-family: var(--f-display); font-weight: var(--w-display); font-stretch: var(--s-display); font-size: 22px; line-height: 1; }
+.lvl .bar { height: 6px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.lvl .bar i { display: block; height: 100%; background: var(--c-jaune); border-radius: 99px; }
+.lvl:hover .q-note { color: var(--paper); }
+.sw-group { display: grid; grid-template-columns: 84px minmax(0, 1fr); align-items: center; gap: 10px; margin-top: 8px; }
+.grp { font-size: 12px; color: var(--faint); }
+.swatches, .pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.pills { margin-top: 8px; }
+.sw { width: 34px; height: 34px; border: 0; padding: 0; cursor: pointer; position: relative; box-shadow: inset 0 0 0 1px var(--line); display: grid; place-items: center; }
+.sw.metal { background-size: 250% 100% !important; background-position: 30% 50% !important; }
 .sw[aria-pressed="true"]::after { content: ""; position: absolute; inset: -5px; border: 2px solid var(--paper); }
+.sw:disabled { cursor: not-allowed; filter: grayscale(0.85) brightness(0.45); }
+.sw .lock { width: 14px; height: 14px; color: var(--paper); }
+.q-pill.locked { border-style: dashed; border-color: var(--faint); color: var(--faint); opacity: 1; cursor: not-allowed; }
+.need { font-size: 11px; font-weight: 600; color: var(--faint); display: inline-flex; align-items: center; gap: 3px; }
+.need svg { width: 11px; height: 11px; }
+.toggle { display: inline-flex; align-items: center; gap: 10px; margin-top: 12px; font-weight: 600; font-size: 14px; cursor: pointer; }
+.toggle.locked { color: var(--faint); cursor: not-allowed; }
+.toggle input { appearance: none; width: 36px; height: 20px; margin: 0; border-radius: 99px; background: var(--line); position: relative; cursor: inherit; flex: none; transition: background 0.15s ease; }
+.toggle input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: var(--paper); transition: transform 0.15s ease; }
+.toggle input:checked { background: var(--c-jaune); }
+.toggle input:checked::after { transform: translateX(16px); background: var(--ink); }
 .acts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
 .danger:hover { border-color: var(--c-rouge); color: var(--c-rouge); }
 .preview-col { position: sticky; top: 24px; display: grid; gap: 12px; }
-.preview-col > :first-child { box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.8); }
+.pv :deep(.qcard:not(.fx-neon)) { box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.8); }
 .meta { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
 .link { overflow-wrap: anywhere; user-select: all; }
 .mini { display: none; }
@@ -290,6 +394,9 @@ async function copyLink() {
   .preview-col { position: static; max-width: 340px; width: 100%; margin: 0 auto; order: -1; }
 }
 @media (max-width: 520px) {
-  .form, .choices { grid-template-columns: minmax(0, 1fr); }
+  .form { grid-template-columns: minmax(0, 1fr); }
+  .sw-group { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .lvl { grid-template-columns: auto minmax(60px, 1fr); }
+  .lvl .q-note { grid-column: 1 / -1; }
 }
 </style>
