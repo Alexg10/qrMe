@@ -137,6 +137,8 @@ watch(() => [c.value.first_name, c.value.last_name, c.value.layout], () => nextT
 
 <style scoped>
 .qcard {
+  /* Ne pas hériter du centrage d'un parent (ex. la mini-carte de l'éditeur est un <button>). */
+  text-align: left;
   --bg: var(--c-jaune);
   --fg: var(--ink);
   /* Angle du reflet, de 0 à 1 : donné par QrTilt (--tx/--ty) ou, à défaut, une dérive lente (--ax/--ay). */

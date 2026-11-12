@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Eye, EyeOff, Loader2, Lock, Plus, Save } from "lucide-vue-next";
+import { Eye, EyeOff, Loader2, Lock, Plus, Power, Save, Trash2 } from "lucide-vue-next";
 import { useToast } from "@/components/ui/toast/use-toast";
 
 const props = defineProps<{ card?: Card }>();
@@ -313,10 +313,10 @@ async function copyLink() {
           <Plus v-else aria-hidden="true" />
           {{ saving ? "Enregistrement…" : card ? "Enregistrer" : "Créer la carte" }}
         </button>
-        <template v-if="card">
-          <button type="button" class="q-pill" @click="toggleActive">{{ isActive ? "Désactiver" : "Réactiver" }}</button>
-          <button type="button" class="q-pill danger" @click="destroy">{{ confirmDelete ? "Confirmer la suppression" : "Supprimer" }}</button>
-        </template>
+        <div v-if="card" class="sec">
+          <button type="button" class="q-pill" @click="toggleActive"><Power aria-hidden="true" />{{ isActive ? "Désactiver" : "Réactiver" }}</button>
+          <button type="button" class="q-pill danger" :class="{ armed: confirmDelete }" @click="destroy"><Trash2 aria-hidden="true" />{{ confirmDelete ? "Confirmer" : "Supprimer" }}</button>
+        </div>
       </div>
     </form>
 
@@ -379,9 +379,15 @@ async function copyLink() {
 .toggle input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: var(--paper); transition: transform 0.15s ease; }
 .toggle input:checked { background: var(--c-jaune); }
 .toggle input:checked::after { transform: translateX(16px); background: var(--ink); }
-.acts { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+/* Les trois boutons ont la même hauteur ; Enregistrer se distingue par sa couleur, pas par sa taille. */
+.acts { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+.acts .q-pill { height: 52px; justify-content: center; }
+.sec { display: flex; gap: 10px; }
+.sec .q-pill { padding: 0 20px; font-size: 15px; gap: 8px; }
+.sec .q-pill svg { width: 17px; height: 17px; }
+.danger.armed { background: var(--c-rouge); border-color: var(--c-rouge); color: var(--paper); }
 .q-pill.save {
-  padding: 14px 28px; gap: 10px; font-size: 17px; font-weight: 700;
+  padding: 0 28px; gap: 10px; font-size: 17px; font-weight: 700;
   background: var(--c-jaune); border-color: var(--c-jaune); color: var(--ink);
   box-shadow: 0 10px 24px -10px rgb(0 0 0 / 0.8);
   transition: transform 0.12s ease, filter 0.12s ease;
@@ -392,6 +398,7 @@ async function copyLink() {
 .spin { animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .danger:hover { border-color: var(--c-rouge); color: var(--c-rouge); }
+.q-pill.danger.armed:hover:not(:disabled) { background: var(--c-rouge); color: var(--paper); filter: brightness(1.08); }
 .preview-col { position: sticky; top: 24px; display: grid; gap: 12px; }
 .pv :deep(.qcard:not(.fx-neon)) { box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.8); }
 .meta { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
@@ -409,6 +416,9 @@ async function copyLink() {
 }
 @media (max-width: 520px) {
   .form { grid-template-columns: minmax(0, 1fr); }
+  .acts { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .sec { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sec .q-pill { padding: 0 12px; }
   .sw-group { grid-template-columns: minmax(0, 1fr); gap: 6px; }
   .lvl { grid-template-columns: auto minmax(60px, 1fr); }
   .lvl .q-note { grid-column: 1 / -1; }
