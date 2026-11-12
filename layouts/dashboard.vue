@@ -1,19 +1,17 @@
 <script setup lang="ts">
-import { QrCode, ScanLine, Layers, WalletCards, ChartColumn, Plus, LogOut, Sparkles } from "lucide-vue-next";
+import { QrCode, ScanLine, Layers, WalletCards, ChartColumn, Plus } from "lucide-vue-next";
 
 const route = useRoute();
-const supabase = useSupabaseClient();
 const user = useSupabaseUser();
 const { entries, loaded: collLoaded, load: loadCollection } = useCollection();
 const { load: loadCards } = useMyCards();
-const { level } = useProgress();
 
 const NAV = [
   { to: "/dashboard", icon: QrCode, label: "SHOWme", sub: "Montrer ma carte", exact: true },
   { to: "/dashboard/scanner", icon: ScanLine, label: "Scanner", sub: "Ajouter une carte" },
   { to: "/dashboard/collection", icon: Layers, label: "Collection", badge: true },
   { to: "/dashboard/cards", icon: WalletCards, label: "Mes cartes" },
-  // En mobile, Stats passe dans le menu Compte pour garder 5 onglets.
+  // En mobile, Stats passe dans la page Compte pour garder 5 onglets.
   { to: "/dashboard/stats", icon: ChartColumn, label: "Stats", sub: "Scans et ajouts", desktopOnly: true },
 ];
 const isActive = (item: (typeof NAV)[number]) =>
@@ -23,26 +21,6 @@ const initials = computed(() => {
   const email = user.value?.email || "";
   return email.slice(0, 2).toUpperCase() || "QR";
 });
-
-const menuOpen = ref(false);
-watch(() => route.fullPath, () => (menuOpen.value = false));
-const me = ref<HTMLElement>();
-function onDocClick(e: MouseEvent) {
-  if (menuOpen.value && !me.value?.contains(e.target as Node)) menuOpen.value = false;
-}
-onMounted(() => document.addEventListener("click", onDocClick));
-onBeforeUnmount(() => document.removeEventListener("click", onDocClick));
-async function logout() {
-  await supabase.auth.signOut();
-  useState("my-cards").value = [];
-  useState("collection").value = [];
-  try {
-    localStorage.removeItem("qrme-my-cards");
-  } catch {
-    /* rien */
-  }
-  await navigateTo("/login");
-}
 
 onMounted(() => {
   loadCards();
@@ -73,25 +51,16 @@ onMounted(() => {
         <Plus :size="22" :stroke-width="2" aria-hidden="true" />
         <span class="tip">Nouvelle carte</span>
       </NuxtLink>
-      <div ref="me" class="me">
-        <button
-          type="button"
-          class="av-btn"
-          :class="{ on: menuOpen || route.path.startsWith('/dashboard/stats') }"
-          :aria-expanded="menuOpen"
-          aria-label="Mon compte"
-          @click="menuOpen = !menuOpen"
-        >
-          <span class="av">{{ initials }}</span>
-          <span class="lbl" aria-hidden="true">Compte</span>
-        </button>
-        <div v-if="menuOpen" class="menu">
-          <span class="q-note">{{ user?.email }}</span>
-          <NuxtLink to="/dashboard/stats" class="q-pill"><Sparkles aria-hidden="true" />Niv. {{ level }} · voir ma progression</NuxtLink>
-          <NuxtLink to="/dashboard/stats" class="q-pill mob-only"><ChartColumn aria-hidden="true" />Stats · scans et ajouts</NuxtLink>
-          <button type="button" class="q-pill" @click="logout"><LogOut aria-hidden="true" />Se déconnecter</button>
-        </div>
-      </div>
+      <NuxtLink
+        class="me"
+        to="/dashboard/account"
+        aria-label="Mon compte"
+        :aria-current="route.path.startsWith('/dashboard/account') ? 'page' : undefined"
+      >
+        <span class="av">{{ initials }}</span>
+        <span class="lbl" aria-hidden="true">Compte</span>
+        <span class="tip">Compte<small>{{ user?.email }}</small></span>
+      </NuxtLink>
     </aside>
 
     <main>
@@ -135,18 +104,15 @@ onMounted(() => {
 }
 .tip::before { content: ""; position: absolute; right: 100%; top: 50%; translate: 0 -50%; border: 5px solid transparent; border-right-color: var(--paper); }
 .tip small { display: block; margin-top: 3px; font-family: var(--f-body); font-weight: 400; font-size: 11px; text-transform: none; letter-spacing: 0; color: var(--faint); }
-.nav a:hover .tip, .nav a:focus-visible .tip, .new-btn:hover .tip, .new-btn:focus-visible .tip { opacity: 1; translate: 0 -50%; }
+.nav a:hover .tip, .nav a:focus-visible .tip, .new-btn:hover .tip, .new-btn:focus-visible .tip,
+.me:hover .tip, .me:focus-visible .tip { opacity: 1; translate: 0 -50%; }
 .side :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
-.me { margin-top: auto; position: relative; }
-.av-btn { border: 0; padding: 0; background: none; cursor: pointer; display: grid; justify-items: center; gap: 4px; color: var(--ink); }
-.lbl, .mob-only { display: none; }
+.me { margin-top: auto; position: relative; display: grid; justify-items: center; gap: 4px; color: var(--ink); }
+.me[aria-current="page"] .av { background: var(--paper); color: var(--ink); box-shadow: 0 0 0 2px var(--ink); }
+.lbl { display: none; }
 .av {
   width: 36px; height: 36px; display: grid; place-content: center;
   background: var(--ink); color: var(--c-jaune); font-family: var(--f-display); font-weight: var(--w-display); font-size: 15px;
-}
-.menu {
-  position: absolute; left: calc(100% + 14px); bottom: 0; z-index: 30; display: grid; gap: 10px; padding: 14px;
-  background: var(--ink-2); border: 1px solid var(--line); min-width: 220px;
 }
 main {
   min-width: 0;
@@ -169,12 +135,12 @@ main > :deep(*) { max-width: 1180px; }
   .nav a:nth-child(1) { order: 3; }
   .nav a:nth-child(3) { order: 4; }
   .me { order: 5; }
-  .nav a, .av-btn, .me { flex: 1 1 0; min-width: 0; }
-  .nav a, .av-btn {
+  .nav a, .me { flex: 1 1 0; min-width: 0; }
+  .nav a, .me {
     width: auto; height: 54px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
   }
-  .nav a[aria-current="page"], .av-btn.on { background: var(--ink); color: var(--c-jaune); }
-  .av-btn.on .av { background: var(--c-jaune); color: var(--ink); }
+  .nav a[aria-current="page"], .me[aria-current="page"] { background: var(--ink); color: var(--c-jaune); }
+  .me[aria-current="page"] .av { background: var(--c-jaune); color: var(--ink); box-shadow: none; }
   .av { width: 24px; height: 24px; font-size: 11px; }
   .lbl {
     display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
@@ -182,10 +148,7 @@ main > :deep(*) { max-width: 1180px; }
   }
   .badge { top: 4px; right: calc(50% - 22px); }
   .logo, .tip, .new-btn, .nav a.desk-only { display: none; }
-  .av-btn { width: 100%; }
-  .mob-only { display: inline-flex; }
   .me { margin-top: 0; }
-  .menu { left: auto; right: 0; bottom: calc(100% + 12px); }
   main {
     padding-left: max(16px, env(safe-area-inset-left, 0px));
     padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ArrowLeft } from "lucide-vue-next";
+
 definePageMeta({ layout: "dashboard" });
 useHead({ title: "Stats · qrMe" });
 
@@ -10,6 +12,12 @@ const toNext = computed(() => (nextAt.value == null ? 0 : nextAt.value - best.va
 const ladder = computed(() =>
   LEVELS.map((at, i) => ({ n: i + 1, at, items: i === 0 ? "Les 7 couleurs classiques" : unlockSummary(i + 1) })),
 );
+/* Retour à la page précédente (en général Compte), ou à Compte si on arrive directement ici. */
+const router = useRouter();
+function goBack() {
+  if (window.history.state?.back) router.back();
+  else navigateTo("/dashboard/account");
+}
 const sel = ref<string | null>(null); // null = toutes les cartes
 const loading = ref(true);
 const errorMsg = ref("");
@@ -88,6 +96,7 @@ function spark(a: number[]) {
 
 <template>
   <div>
+    <button type="button" class="back" aria-label="Retour" @click="goBack"><ArrowLeft :size="22" aria-hidden="true" /></button>
     <div class="q-head">
       <h1 class="q-h1">Stats</h1>
       <p>Ton niveau, combien de fois tes cartes ont été scannées, et combien de personnes les ont gardées.</p>
@@ -191,6 +200,15 @@ function spark(a: number[]) {
 </template>
 
 <style scoped>
+/* Stats n'a pas d'onglet en mobile : on y arrive depuis Compte, d'où la flèche de retour. */
+.back {
+  display: none; width: 40px; height: 40px; margin: 0 0 12px -8px; place-content: center;
+  border: 0; background: none; color: var(--paper); cursor: pointer;
+}
+.back:hover { background: var(--ink-2); }
+@media (max-width: 860px) {
+  .back { display: grid; }
+}
 .lvlbox { display: grid; gap: 12px; padding: 18px; margin-bottom: 28px; border: 1px solid var(--line); background: var(--ink-2); }
 .lvl-head { display: flex; align-items: flex-end; gap: 18px; flex-wrap: wrap; }
 .lvl-n { margin: 0; font-family: var(--f-display); font-weight: var(--w-display); font-stretch: var(--s-display); font-size: 56px; line-height: 0.85; letter-spacing: -0.03em; color: var(--c-jaune); }
